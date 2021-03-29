@@ -55,12 +55,15 @@
   }
 
   /* --------------------------- populate Activities -------------------------- */
-  function logActivity(message: string) {
+  function logActivity(data: any) {
+    const { message, flair, title } = data;
     // Populate Activity
     const activity: Activity = {
+      title,
       message,
+      flair,
       read: false,
-      date: new Date(),
+      date: Date.now(),
     };
     activities = [activity, ...activities];
   }
@@ -125,8 +128,12 @@
       });
       creatingFlair = false;
     } else {
-      const message = `You Created a Flair - ${flair}`;
-      logActivity(message);
+      // Log Activity
+      const data = {
+        title: "Flair Created",
+        flair,
+      };
+      logActivity(data);
       creatingFlair = false;
     }
   }
@@ -304,7 +311,7 @@
         <Profile {user} on:logout={() => logOut()} />
       {:else}
         <!-- PAGE == SETTINGS -->
-        <Settings {user} {activities} />
+        <Settings {user} {activities} on:markAsRead={() => markAsRead()} />
       {/if}
     {:else}
       <!-- UnAuthenticated Users -->
@@ -333,8 +340,10 @@
     >
     <span
       class={page == "settings" ? "active" : ""}
-      on:click={() => setPage("settings")}><i class="fa fa-cog" /></span
-    >
+      on:click={() => setPage("settings")}
+      ><i class="fa fa-cog" />
+      <sup><i class="badge badge-danger">{activities.length}</i></sup>
+    </span>
   </div>
 </div>
 

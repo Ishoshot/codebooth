@@ -69,7 +69,9 @@ export type Project = {
 };
 
 export type Activity = {
-  message: string;
+  title?: string;
+  message?: string;
   read: boolean;
-  date: Date;
+  date: number;
+  flair?: string;
 };
