@@ -1,0 +1,36 @@
+body {
+  margin: 0 !important;
+  padding: 0% !important;
+  /* width: 100%; */
+  overflow-x: hidden;
+}
+
+.sticky-foot {
+  position: fixed;
+  background-color: #1d1d1d;
+  width: 100%;
+  bottom: 0;
+}
+
+.nav {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  height: 4rem;
+  align-items: flex-end;
+  color: #fff;
+  padding-bottom: 1rem;
+}
+
+.nav > span {
+  font-size: 1rem;
+  cursor: pointer;
+  transition: 0.5s all;
+}
+
+.nav > span:hover {
+  color: #0e639c;
+  transform: scale(1.1);
+  font-weight: bold;
+}
