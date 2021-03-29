@@ -1,2 +1,2 @@
-# adv-vsc-ext-typescript-svelte
-This is an Advanced VSCode Extension starter with typescript and svelte..
+# CodeBooth
+Visual Studio Code's Stack Overflow and more...
