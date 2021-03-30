@@ -1,13 +1,14 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import type { Activity, User } from "../types";
+  import type { Activity, TeamMember, User } from "../types";
   import Flair from "./local/Flair.svelte";
   import Radar from "svelte-chartjs/src/Radar.svelte";
   import HomeActions from "./HomeActions.svelte";
   import MyProjects from "./local/myProjects.svelte";
   import MyTeams from "./local/myTeams.svelte";
   import Profile from "./Profile.svelte";
-  import Settings from "./Settings.svelte";
+  import Settings from "./Notifications.svelte";
+  import Notifications from "./Notifications.svelte";
 
   // import Todos from "./Todos.svelte";
 
@@ -208,6 +209,112 @@
     }
   }
 
+  /* -------------------------------- leave Team ------------------------------- */
+  async function leaveTeam(event: CustomEvent<any>) {
+    const team: TeamMember = event.detail;
+    const response = await fetch(`${apiBaseURL}/team/leave`, {
+      method: "POST",
+      body: JSON.stringify({
+        user: team.user_id,
+        team: team.team_id,
+        teamName: team.team_name,
+      }),
+      headers: {
+        "content-type": "application/json",
+        authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    const data = await response.json();
+    if (!data) {
+      tsvscode.postMessage({
+        type: "onError",
+        value:
+          "Oops! We are not able to remove you from this Team. Possible Reason: We don't know. Contact Support",
+      });
+      return;
+    } else {
+      tsvscode.postMessage({
+        type: "onInfo",
+        value: "You were successfully removed from the Team.",
+      });
+      loadUser();
+    }
+  }
+
+  /* -------------------------------- Update Team Request ------------------------------- */
+  async function updateteamrequest(event: CustomEvent<any>) {
+    const team: TeamMember = event.detail.team;
+    const status: string = event.detail.status;
+    const request_seen: boolean = event.detail.request_seen;
+
+    const response = await fetch(`${apiBaseURL}/teamMember/update`, {
+      method: "PUT",
+      body: JSON.stringify({
+        id: team.id,
+        // user: team.user_id,
+        // team: team.team_id,
+        // teamName: team.team_name,
+        status: status,
+        request_seen: request_seen,
+      }),
+      headers: {
+        "content-type": "application/json",
+        authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    const data = await response.json();
+    if (!data) {
+      tsvscode.postMessage({
+        type: "onError",
+        value:
+          "Oops! Error Encountered. Possible Reason: We don't know. Contact Support",
+      });
+      return;
+    } else if (data.teamMember == null) {
+      tsvscode.postMessage({
+        type: "onError",
+        value:
+          "We were not able to update the status. Possible Reason: Request not Found.",
+      });
+      loadUser();
+    } else {
+      if (status == "accepted" || status == "rejected") {
+        tsvscode.postMessage({
+          type: "onInfo",
+          value: `Status Updated Successful! -- You have ${status} the team request.`,
+        });
+      } else {
+        tsvscode.postMessage({
+          type: "onInfo",
+          value: "Mark As Read!",
+        });
+      }
+      // if(status == "")
+      loadUser();
+    }
+  }
+
+  /* -------------------------------- load User ------------------------------- */
+  async function loadUser() {
+    const response = await fetch(`${apiBaseURL}/profile`, {
+      headers: {
+        authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    const data = await response.json();
+    if (!data) {
+      user = null;
+      loading = false;
+      return;
+    }
+    user = data.user;
+    feedChart(data.user);
+    loading = false;
+  }
+
   /* ------------------------ Mark Notification as Read ----------------------- */
   function markAsRead(event: CustomEvent<any>) {
     const id = event.detail;
@@ -226,7 +333,6 @@
                 authorization: `Bearer ${accessToken}`,
               },
             });
-
             const data = await response.json();
             if (!data) {
               user = null;
@@ -308,10 +414,7 @@
       <!-- Authenticated, But no User Data -->
       <div>Loading ...</div>
     {:else if user !== null}
-      <!-- User Data Is Available -->
       {#if page === "home"}
-        <!-- PAGE == HOME -->
-
         <div class="chart">
           <Radar data={dataRadar} {options} />
         </div>
@@ -321,30 +424,35 @@
           on:showTeams={() => showTeams()}
           on:showProjects={() => showProjects()}
         />
+
         {#if showFlairsModule}
           <Flair {user} {creatingFlair} />
         {/if}
+
         {#if showTeamsModule}
           <MyTeams {user} {creatingTeam} />
         {/if}
+
         {#if showProjectsModule}
           <MyProjects {user} {creatingProject} />
         {/if}
+
         <!-- <Todos {user} {accessToken} /> -->
       {:else if page === "profile"}
-        <!-- PAGE == PROFILE -->
         <Profile {user} on:logout={() => logOut()} />
-      {:else}
-        <!-- PAGE == SETTINGS -->
-        <Settings
+      {:else if page === "notifications"}
+        <Notifications
           {user}
           {activities}
           on:markasread={(event) => markAsRead(event)}
+          on:leaveteam={(event) => leaveTeam(event)}
+          on:updateteamrequest={(event) => updateteamrequest(event)}
         />
+      {:else}
+        <h1>Settings</h1>
       {/if}
     {:else}
       <!-- UnAuthenticated Users -->
-
       <button
         on:click={() => {
           tsvscode.postMessage({ type: "authenticate", value: undefined });
@@ -367,18 +475,35 @@
       class={page == "profile" ? "active" : ""}
       on:click={() => setPage("profile")}><i class="fa fa-user-circle" /></span
     >
+
+    {#if user}
+      <span
+        class={page == "notifications" ? "active" : ""}
+        on:click={() => setPage("notifications")}
+      >
+        {#if user.__teamsIn__.filter((t) => {
+          return t.status == "pending" && t.request_seen == false;
+        }).length > 0 || activities.filter((a) => a.read == false).length > 0}
+          <i class="fa fa-bell danger" />
+        {:else}
+          <i class="fa fa-bell" />
+        {/if}
+      </span>
+    {:else}
+      <span
+        class={page == "notifications" ? "active" : ""}
+        on:click={() => setPage("notifications")}
+      >
+        <i class="fa fa-bell" />
+      </span>
+    {/if}
+
     <span
       class={page == "settings" ? "active" : ""}
       on:click={() => setPage("settings")}
-      ><i
-        class={activities.filter((a) => a.read == false).length >= 1
-          ? "danger fa fa-cog"
-          : "fa fa-cog"}
-      />
-      <!-- <span class="badge badge-danger"
-        >{activities.filter((a) => a.read == false).length}</span
-      > -->
-    </span>
+    >
+      <i class="fa fa-cog" /></span
+    >
   </div>
 </div>
 

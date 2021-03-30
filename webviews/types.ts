@@ -35,8 +35,8 @@ export type TeamMember = {
   team_id: string;
   team_name: string;
   status: string;
-  request_seen: string;
-  response_seen: string;
+  request_seen: boolean;
+  response_seen: boolean;
   created_at: Date;
   updated_at: Date;
   __team__: Team;
