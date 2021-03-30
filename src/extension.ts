@@ -193,7 +193,7 @@ export function activate(context: vscode.ExtensionContext) {
                   console.log(data);
 
                   vscode.window.showInformationMessage(
-                    "Creating Team: " + projectName
+                    "Creating Project: " + projectName
                   );
 
                   sidebarProvider._view?.webview.postMessage({
@@ -219,7 +219,7 @@ export function activate(context: vscode.ExtensionContext) {
               console.log(data);
 
               vscode.window.showInformationMessage(
-                "Creating Team: " + projectName
+                "Creating Project: " + projectName
               );
 
               sidebarProvider._view?.webview.postMessage({

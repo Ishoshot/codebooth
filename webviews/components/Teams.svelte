@@ -313,8 +313,8 @@
     height: 100vh;
     padding-top: 30px;
     padding-bottom: 30%;
-    padding-left: 10px;
-    padding-right: 10px;
+    padding-left: 2px;
+    padding-right: 2px;
   }
 
   .teams-row {
@@ -326,10 +326,10 @@
   }
 
   .team-box {
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-    margin-left: 1rem;
-    margin-right: 1rem;
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
     width: 20rem;
     background-color: #1a1919;
     border: 1px solid #252525;

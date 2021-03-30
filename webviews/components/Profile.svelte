@@ -174,16 +174,15 @@
   }
 
   .flairItem {
-    background-color: #cfcfcf;
+    background-color: #ececec;
     padding-top: 5px;
     padding-bottom: 5px;
     padding-left: 12px;
     padding-right: 12px;
     color: #111;
-    /* margin-left: 10px; */
     margin-right: 10px;
     border-radius: 20px;
-    margin-top: 10px;
+    margin-top: 5%;
     cursor: pointer;
   }
 
@@ -239,16 +238,16 @@
   }
 
   .primary {
-    background-color: #222222;
+    background-color: #ececec;
     padding: 1rem;
     margin-top: 5px;
     margin-bottom: 5px;
     border-radius: 1rem;
-    color: #e4e4e4;
+    color: #1d1d1d;
   }
 
   .primary > p {
-    border-bottom: 1px solid #888888;
+    border-bottom: 1px solid #d1d1d1;
     padding-top: 1rem;
     padding-bottom: 1rem;
   }
@@ -264,16 +263,16 @@
   }
 
   .secondary {
-    background-color: #222222;
+    background-color: #ececec;
     padding: 1rem;
     margin-top: 5px;
     margin-bottom: 5px;
     border-radius: 1rem;
-    color: #e4e4e4;
+    color: #1d1d1d;
   }
 
   .secondary > p {
-    border-bottom: 1px solid #888888;
+    border-bottom: 1px solid #d1d1d1;
     padding-top: 1rem;
     padding-bottom: 1rem;
   }
@@ -290,16 +289,16 @@
   }
 
   .social {
-    background-color: #222222;
+    background-color: #ececec;
     padding: 1rem;
     margin-top: 5px;
     margin-bottom: 5px;
     border-radius: 1rem;
-    color: #e4e4e4;
+    color: #1d1d1d;
   }
 
   .social > p {
-    border-bottom: 1px solid #888888;
+    border-bottom: 1px solid #d1d1d1;
     padding-top: 1rem;
     padding-bottom: 1rem;
   }

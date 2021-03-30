@@ -56,12 +56,14 @@
 
   /* --------------------------- populate Activities -------------------------- */
   function logActivity(data: any) {
-    const { message, flair, title } = data;
+    const { message, flair, title, team, project } = data;
     // Populate Activity
     const activity: Activity = {
       title,
       message,
       flair,
+      team,
+      project,
       read: false,
       date: Date.now(),
     };
@@ -160,8 +162,16 @@
         value:
           "Error Encountered while creating Team. Possible Reason: Team Name already exists",
       });
+      creatingTeam = false;
+    } else {
+      // Log Activity
+      const data = {
+        title: "Team Created",
+        team: team.teamName,
+      };
+      logActivity(data);
+      creatingTeam = false;
     }
-    creatingTeam = false;
   }
 
   /*--------------------- Create Project --------------------- */
@@ -187,8 +197,21 @@
         value:
           "Error Encountered while creating Project. Possible Reason: Project Name already exists",
       });
+      creatingProject = false;
+    } else {
+      const data = {
+        title: "Project Created",
+        project: project.name,
+      };
+      logActivity(data);
+      creatingProject = false;
     }
-    creatingProject = false;
+  }
+
+  /* ------------------------ Mark Notification as Read ----------------------- */
+  function markAsRead(event: CustomEvent<any>) {
+    const id = event.detail;
+    activities[id].read = true;
   }
 
   onMount(async () => {
@@ -261,12 +284,14 @@
     });
 
     /* ------ Send Message to SideBarProvider to Load Welcome for UnAuth User ------ */
-    if (accessToken === "" || accessToken == undefined) {
-      tsvscode.postMessage({
-        type: "show-welcome",
-        value: undefined,
-      });
-    }
+    setTimeout(() => {
+      if (accessToken === "" || accessToken == undefined) {
+        tsvscode.postMessage({
+          type: "show-welcome",
+          value: undefined,
+        });
+      }
+    }, 1000);
 
     /* ----------------------------- Call for Token ----------------------------- */
     tsvscode.postMessage({
@@ -311,7 +336,11 @@
         <Profile {user} on:logout={() => logOut()} />
       {:else}
         <!-- PAGE == SETTINGS -->
-        <Settings {user} {activities} on:markAsRead={() => markAsRead()} />
+        <Settings
+          {user}
+          {activities}
+          on:markasread={(event) => markAsRead(event)}
+        />
       {/if}
     {:else}
       <!-- UnAuthenticated Users -->
@@ -341,8 +370,14 @@
     <span
       class={page == "settings" ? "active" : ""}
       on:click={() => setPage("settings")}
-      ><i class="fa fa-cog" />
-      <sup><i class="badge badge-danger">{activities.length}</i></sup>
+      ><i
+        class={activities.filter((a) => a.read == false).length >= 1
+          ? "danger fa fa-cog"
+          : "fa fa-cog"}
+      />
+      <!-- <span class="badge badge-danger"
+        >{activities.filter((a) => a.read == false).length}</span
+      > -->
     </span>
   </div>
 </div>
@@ -377,5 +412,9 @@
 
   .space {
     height: 100px;
+  }
+
+  .danger {
+    color: red;
   }
 </style>
