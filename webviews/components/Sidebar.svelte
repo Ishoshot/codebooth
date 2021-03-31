@@ -60,6 +60,7 @@
     const { message, flair, title, team, project, teamRequest } = data;
     // Populate Activity
     const activity: Activity = {
+      owner: user?.id,
       title,
       message,
       flair,

@@ -50,6 +50,10 @@
           value:
             "A Request Has been sent to the User... Check your settings for info",
         });
+        tsvscode.postMessage({
+          type: "reload-user",
+          value: undefined,
+        });
         dispatch("addUserToTeam");
       }
     }

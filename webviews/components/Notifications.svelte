@@ -166,7 +166,7 @@
 
   <div class="activities-container">
     {#each activities as activity, id}
-      {#if id <= 14}
+      {#if activity.owner === user.id && id <= 14}
         <div
           class={activity.read ? "activity read" : "activity unread"}
           on:click={() => markAsRead(id)}

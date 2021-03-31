@@ -69,6 +69,7 @@ export type Project = {
 };
 
 export type Activity = {
+  owner?: string;
   id?: string;
   title?: string;
   message?: string;
