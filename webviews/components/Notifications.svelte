@@ -92,9 +92,11 @@
   </div>
 
   <div class="featuredTeams-container">
-    {#each user.__teamsIn__.filter((t) => {
-      return t.status == "pending";
-    }) as teamIn}
+    {#each user.__teamsIn__
+      .filter((t) => {
+        return t.status == "pending";
+      })
+      .reverse() as teamIn}
       <div
         class={teamIn.request_seen
           ? "featuredTeam read"
@@ -179,6 +181,14 @@
             {#if activity.project !== undefined}
               <i class="icon-project fa fa-project-diagram" />
             {/if}
+            {#if activity.teamRequest !== undefined}
+              {#if activity.teamRequest.status == "accepted"}
+                <i class="icon-project fa fa-check-circle" />
+              {/if}
+              {#if activity.teamRequest.status == "rejected"}
+                <i class="icon-danger fa fa-times-circle" />
+              {/if}
+            {/if}
           </div>
           <div class="activity-message">
             {#if activity.flair !== undefined}
@@ -199,6 +209,13 @@
                 Project Name <span>{activity.project}</span> was created successfully.
               </p>
             {/if}
+            {#if activity.teamRequest !== undefined}
+              <h3>{activity.title}</h3>
+              <p>
+                You <span>{activity.teamRequest.status}</span> a request to join
+                team: <span>{activity.teamRequest.team_name}.</span>
+              </p>
+            {/if}
           </div>
           <div class="activity-date">
             <span>{renderActivityDate(activity.date)} ago</span>
@@ -217,9 +234,11 @@
   </div>
 
   <div class="featuredTeams-container">
-    {#each user.__teamsIn__.filter((t) => {
-      return t.status == "accepted";
-    }) as teamIn}
+    {#each user.__teamsIn__
+      .filter((t) => {
+        return t.status == "accepted";
+      })
+      .reverse() as teamIn}
       <div class="featuredTeam">
         <div class="featuredTeam-icon">
           <i class="icon-team fa fa-user-friends" />
@@ -368,6 +387,14 @@
   .icon-project {
     padding: 6px;
     background-color: rgba(14, 156, 14, 0.8);
+    color: #fff;
+    font-size: 1rem;
+    border-radius: 50%;
+  }
+
+  .icon-danger {
+    padding: 6px;
+    background-color: rgba(223, 29, 29, 0.8);
     color: #fff;
     font-size: 1rem;
     border-radius: 50%;

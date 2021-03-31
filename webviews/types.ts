@@ -77,4 +77,5 @@ export type Activity = {
   flair?: string;
   team?: string;
   project?: string;
+  teamRequest?: TeamMember;
 };

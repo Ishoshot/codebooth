@@ -57,7 +57,7 @@
 
   /* --------------------------- populate Activities -------------------------- */
   function logActivity(data: any) {
-    const { message, flair, title, team, project } = data;
+    const { message, flair, title, team, project, teamRequest } = data;
     // Populate Activity
     const activity: Activity = {
       title,
@@ -65,6 +65,7 @@
       flair,
       team,
       project,
+      teamRequest,
       read: false,
       date: Date.now(),
     };
@@ -252,9 +253,6 @@
       method: "PUT",
       body: JSON.stringify({
         id: team.id,
-        // user: team.user_id,
-        // team: team.team_id,
-        // teamName: team.team_name,
         status: status,
         request_seen: request_seen,
       }),
@@ -285,13 +283,13 @@
           type: "onInfo",
           value: `Status Updated Successful! -- You have ${status} the team request.`,
         });
-      } else {
-        tsvscode.postMessage({
-          type: "onInfo",
-          value: "Mark As Read!",
-        });
+        // Log ACTIVITY
+        const logData = {
+          title: "Team Request Updated",
+          teamRequest: data.teamMember,
+        };
+        logActivity(logData);
       }
-      // if(status == "")
       loadUser();
     }
   }
