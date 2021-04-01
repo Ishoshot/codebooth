@@ -137,7 +137,7 @@
   <!-- Incoming Team Request Ends -->
 
   <!-- Outgoing Team Request  -->
-  <div class="team-request-out">
+  <!-- <div class="team-request-out">
     <h3>Outgoing Team Requests</h3>
     {#each user.__teamsIn__.filter((t) => {
       return t.status == "pending";
@@ -151,7 +151,7 @@
         display here..
       </p>
     {/each}
-  </div>
+  </div> -->
   <!-- Outgoing Team Request Ends  -->
 
   <!-- Recent Activities -->
@@ -290,14 +290,14 @@
     font-weight: bold;
   }
 
-  .team-request-out {
+  /* .team-request-out {
     margin-top: 40px;
   }
 
   .team-request-out h3 {
     margin-bottom: 10px;
     font-weight: bold;
-  }
+  } */
 
   .featured-teams {
     margin-top: 40px;

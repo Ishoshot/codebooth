@@ -8,4 +8,6 @@ declare global {
     setState: (state: any) => void;
   };
   const apiBaseURL: string;
+  const serviceBaseURL: string;
+  const serviceToken: string;
 }

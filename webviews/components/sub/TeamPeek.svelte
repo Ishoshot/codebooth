@@ -6,7 +6,7 @@
   export let user: User;
   export let accessToken: string;
 
-  let userToAdd: string = "";
+  let userToAdd: User | null = null;
   let users: Array<User> = [];
 
   let loading: boolean = true;
@@ -14,9 +14,43 @@
   import { createEventDispatcher } from "svelte";
   const dispatch = createEventDispatcher();
 
+  // Call Mail Service
+  async function callTeamMailService(team: Team, user: string, member: User) {
+    const teamData = {
+      teamName: team.name,
+      teamDesc: team.description,
+      members: team.__members__.filter((t) => {
+        return t.status == "accepted";
+      }).length,
+      projects: team.__projects__.length,
+      user: {
+        name: team.__user__.name,
+        isVerified: team.__user__.verified,
+      },
+      member: {
+        name: member.name,
+        isVerified: member.verified,
+      },
+    };
+    const response = await fetch(`${serviceBaseURL}/team/addUser`, {
+      method: "POST",
+      body: JSON.stringify({
+        team: teamData,
+        user,
+        member: member.email,
+      }),
+      headers: {
+        "content-type": "application/json",
+        authorization: `Bearer ${serviceToken}`,
+      },
+    });
+    const data = await response.json();
+    console.log(data);
+  }
+
   /* ----------------------------- Trigger Add User ----------------------------- */
   async function addUserToTeam(team: Team) {
-    if (userToAdd.length == 0) {
+    if (userToAdd === null) {
       tsvscode.postMessage({
         type: "onError",
         value: "User cannot be Empty! Please Choose a user to add.",
@@ -28,7 +62,7 @@
         body: JSON.stringify({
           team_id: team.id,
           team_name: team.name,
-          user_id: userToAdd,
+          user_id: userToAdd.id,
         }),
         headers: {
           "content-type": "application/json",
@@ -44,16 +78,14 @@
         });
         return;
       } else {
+        callTeamMailService(team, team.__user__.email, userToAdd);
         /* ------------ Show success Message and Return Token for webview Refresh ----------- */
         tsvscode.postMessage({
           type: "onAddUserToTeam",
           value:
-            "A Request Has been sent to the User... Check your settings for info",
+            "A Request Has been sent to the User... Check your e-Mail for info",
         });
-        tsvscode.postMessage({
-          type: "reload-user",
-          value: undefined,
-        });
+
         dispatch("addUserToTeam");
       }
     }
@@ -147,7 +179,7 @@
               {#each users.filter((u) => {
                 return team.__user__.id !== u.id;
               }) as user}
-                <option value={user.id}>{user.name}</option>
+                <option value={user}>{user.name}</option>
               {/each}
             </select>
             <button on:click={() => addUserToTeam(team)}>Add User</button>

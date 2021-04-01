@@ -7,7 +7,6 @@
   import MyProjects from "./local/myProjects.svelte";
   import MyTeams from "./local/myTeams.svelte";
   import Profile from "./Profile.svelte";
-  import Settings from "./Notifications.svelte";
   import Notifications from "./Notifications.svelte";
 
   // import Todos from "./Todos.svelte";

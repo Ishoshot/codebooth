@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { apiBaseURL } from "./constants";
+import { apiBaseURL, serviceBaseURL, serviceToken } from "./constants";
 import { getNonce } from "./getNonce";
 import { TokenManager } from "./TokenManager";
 
@@ -182,6 +182,8 @@ export class TeamPanel {
           <script nonce="${nonce}">
             const tsvscode = acquireVsCodeApi();
           const apiBaseURL = ${JSON.stringify(apiBaseURL)}
+          const serviceBaseURL = ${JSON.stringify(serviceBaseURL)}
+          const serviceToken = ${JSON.stringify(serviceToken)}
           </script> 
       </head>
       <body>
