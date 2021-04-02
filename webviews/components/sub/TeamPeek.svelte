@@ -163,11 +163,13 @@
       </div>
     </div>
 
+    <!-- Members -->
     <div class="second">
       <div class="primary-container">
         <!-- Add user -->
         {#if user.id == team.__user__.id}
           <h3 style="margin-bottom:10px;">Add New Member</h3>
+
           <form class="addUser-form">
             <select
               name="user"
@@ -184,10 +186,14 @@
             </select>
             <button on:click={() => addUserToTeam(team)}>Add User</button>
           </form>
+          <p class="text-muted">
+            By Adding a User, You agree that this user has the permission to
+            create and publish <i>codes</i> under this team.
+          </p>
         {/if}
 
         <!-- Members -->
-        <h3 style="margin-top:20px;">MEMBERS</h3>
+        <h3 style="margin-top:30px;">MEMBERS</h3>
         <div class="primary">
           <p>
             Number of Members: {team.__members__.filter((m) => {
@@ -353,5 +359,13 @@
     100% {
       background-position: left top;
     }
+  }
+
+  .text-muted {
+    font-size: 0.8rem;
+    color: #fff;
+    opacity: 0.8;
+    text-align: justify;
+    margin-top: 5px;
   }
 </style>

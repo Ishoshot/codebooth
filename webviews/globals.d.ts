@@ -1,5 +1,5 @@
 import * as _vscode from "vscode";
-import { apiBaseURL } from "../src/constants";
+import { apiBaseURL, serviceBaseURL, serviceToken } from "../src/constants";
 
 declare global {
   const tsvscode: {

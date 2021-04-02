@@ -2,6 +2,7 @@
   import { onMount } from "svelte";
   import type { User, Activity, TeamMember } from "../types";
 
+  export let accessToken: string;
   export let user: User;
   export let activities: Activity[];
 
@@ -17,31 +18,75 @@
   });
 
   /* ---------------------- Dispatch Remove User form Team ---------------------- */
-  function leaveTeam(team: TeamMember) {
-    dispatch("leaveteam", team);
+  async function leaveTeam(team: TeamMember) {
+    // Get Team
+    const response = await fetch(`${apiBaseURL}/team/get/${team.team_id}`, {
+      method: "GET",
+      headers: {
+        "content-type": "application/json",
+        authorization: `Bearer ${accessToken}`,
+      },
+    });
+    const res = await response.json();
+    if (res.team == null) {
+      tsvscode.postMessage({
+        type: "onError",
+        value:
+          "Oops! Error Encountered. Possible Reason: Couldn't Fetch Team. Contact Support",
+      });
+      return;
+    } else {
+      const data = {
+        teamMember: team,
+        team: res.team,
+      };
+      dispatch("leaveteam", data);
+    }
   }
 
   /* ---------------------- Dispatch Update Team ---------------------- */
-  function updateTeamRequest(team: TeamMember, type: number) {
+  async function updateTeamRequest(team: TeamMember, type: number) {
     let data;
-    if (type == 0) {
-      data = {
-        team: team,
-        status: "rejected",
-        request_seen: true,
-      };
-    } else if (type == 1) {
-      data = {
-        team: team,
-        status: "accepted",
-        request_seen: true,
-      };
+
+    // Get Team
+    const response = await fetch(`${apiBaseURL}/team/get/${team.team_id}`, {
+      method: "GET",
+      headers: {
+        "content-type": "application/json",
+        authorization: `Bearer ${accessToken}`,
+      },
+    });
+    const res = await response.json();
+    if (res.team == null) {
+      tsvscode.postMessage({
+        type: "onError",
+        value:
+          "Oops! Error Encountered. Possible Reason: Couldn't Fetch Team. Contact Support",
+      });
+      return;
     } else {
-      data = {
-        team: team,
-        status: "pending",
-        request_seen: true,
-      };
+      if (type == 0) {
+        data = {
+          id: team.id,
+          team: res.team,
+          status: "rejected",
+          request_seen: true,
+        };
+      } else if (type == 1) {
+        data = {
+          id: team.id,
+          team: res.team,
+          status: "accepted",
+          request_seen: true,
+        };
+      } else {
+        data = {
+          id: team.id,
+          team: res.team,
+          status: "pending",
+          request_seen: true,
+        };
+      }
     }
     dispatch("updateteamrequest", data);
   }
@@ -75,7 +120,10 @@
   }
 </script>
 
+<!-- svelte-ignore missing-declaration -->
 <div class="notifications">
+  <!-- {apiBaseURL} -->
+  <!-- {serviceToken} -->
   <div class="team-request-in">
     <h3>
       Incoming Team Requests
@@ -101,14 +149,16 @@
         class={teamIn.request_seen
           ? "featuredTeam read"
           : "featuredTeam unread"}
-        on:click={() => {
-          updateTeamRequest(teamIn, 3);
-        }}
       >
         <div class="featuredTeam-icon">
           <i class="icon-project fa fa-user-friends" />
         </div>
-        <div class="featuredTeam-message">
+        <div
+          class="featuredTeam-message"
+          on:click={() => {
+            updateTeamRequest(teamIn, 3);
+          }}
+        >
           <h2>{teamIn.team_name}</h2>
           <p>You have been invited to join this team.</p>
         </div>

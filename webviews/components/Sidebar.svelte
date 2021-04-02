@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import type { Activity, TeamMember, User } from "../types";
+  import type { Activity, Team, TeamMember, User } from "../types";
   import Flair from "./local/Flair.svelte";
   import Radar from "svelte-chartjs/src/Radar.svelte";
   import HomeActions from "./HomeActions.svelte";
@@ -212,13 +212,14 @@
 
   /* -------------------------------- leave Team ------------------------------- */
   async function leaveTeam(event: CustomEvent<any>) {
-    const team: TeamMember = event.detail;
+    const teamMember: TeamMember = event.detail.teamMember;
+    const team: Team = event.detail.team;
     const response = await fetch(`${apiBaseURL}/team/leave`, {
       method: "POST",
       body: JSON.stringify({
-        user: team.user_id,
-        team: team.team_id,
-        teamName: team.team_name,
+        user: teamMember.user_id,
+        team: teamMember.team_id,
+        teamName: teamMember.team_name,
       }),
       headers: {
         "content-type": "application/json",
@@ -235,9 +236,12 @@
       });
       return;
     } else {
+      // Call MAIL service
+      callLeaveTeamMailService(team, team.__user__.email, user);
       tsvscode.postMessage({
         type: "onInfo",
-        value: "You were successfully removed from the Team.",
+        value:
+          "You were successfully removed from the Team. Check your e-Mail for info.",
       });
       loadUser();
     }
@@ -245,14 +249,15 @@
 
   /* -------------------------------- Update Team Request ------------------------------- */
   async function updateteamrequest(event: CustomEvent<any>) {
-    const team: TeamMember = event.detail.team;
+    const id: string = event.detail.id;
+    const team: Team = event.detail.team;
     const status: string = event.detail.status;
     const request_seen: boolean = event.detail.request_seen;
 
     const response = await fetch(`${apiBaseURL}/teamMember/update`, {
       method: "PUT",
       body: JSON.stringify({
-        id: team.id,
+        id: id,
         status: status,
         request_seen: request_seen,
       }),
@@ -278,10 +283,12 @@
       });
       loadUser();
     } else {
+      // Call MAIL service
+      callUpdateTeamMailService(team, team.__user__.email, user, status);
       if (status == "accepted" || status == "rejected") {
         tsvscode.postMessage({
           type: "onInfo",
-          value: `Status Updated Successful! -- You have ${status} the team request.`,
+          value: `Status Updated Successful! -- You have ${status} the team request. Check your e-Mail for info`,
         });
         // Log ACTIVITY
         const logData = {
@@ -292,6 +299,84 @@
       }
       loadUser();
     }
+  }
+
+  // Call UpdateTeam Mail Service
+  async function callUpdateTeamMailService(
+    team: Team,
+    user: string,
+    member: User | null,
+    status: string
+  ) {
+    const teamData = {
+      teamName: team.name,
+      teamDesc: team.description,
+      members: team.__members__.filter((t) => {
+        return t.status == "accepted";
+      }).length,
+      projects: team.__projects__.length,
+      user: {
+        name: team.__user__.name,
+        isVerified: team.__user__.verified,
+      },
+      member: {
+        name: member?.name,
+        isVerified: member?.verified,
+      },
+    };
+    const response = await fetch(`${serviceBaseURL}/teamRequest/update`, {
+      method: "POST",
+      body: JSON.stringify({
+        team: teamData,
+        user,
+        member: member?.email,
+        status,
+      }),
+      headers: {
+        "content-type": "application/json",
+        authorization: `Bearer ${serviceToken}`,
+      },
+    });
+    const data = await response.json();
+    console.log(data);
+  }
+
+  // Call leaveTeam Mail Service
+  async function callLeaveTeamMailService(
+    team: Team,
+    user: string,
+    member: User | null
+  ) {
+    const teamData = {
+      teamName: team.name,
+      teamDesc: team.description,
+      members: team.__members__.filter((t) => {
+        return t.status == "accepted";
+      }).length,
+      projects: team.__projects__.length,
+      user: {
+        name: team.__user__.name,
+        isVerified: team.__user__.verified,
+      },
+      member: {
+        name: member?.name,
+        isVerified: member?.verified,
+      },
+    };
+    const response = await fetch(`${serviceBaseURL}/team/leave`, {
+      method: "POST",
+      body: JSON.stringify({
+        team: teamData,
+        user,
+        member: member?.email,
+      }),
+      headers: {
+        "content-type": "application/json",
+        authorization: `Bearer ${serviceToken}`,
+      },
+    });
+    const data = await response.json();
+    console.log(data);
   }
 
   /* -------------------------------- load User ------------------------------- */
@@ -442,6 +527,7 @@
         <Notifications
           {user}
           {activities}
+          {accessToken}
           on:markasread={(event) => markAsRead(event)}
           on:leaveteam={(event) => leaveTeam(event)}
           on:updateteamrequest={(event) => updateteamrequest(event)}
