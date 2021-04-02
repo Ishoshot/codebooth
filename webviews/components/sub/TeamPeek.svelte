@@ -234,7 +234,8 @@
   }
 
   .img-primary {
-    background: rgb(29, 29, 29);
+    background: #ececec;
+    color: #1d1d1d;
     padding: 30px;
     border-radius: 50%;
   }
@@ -277,12 +278,22 @@
   }
 
   .addUser-form select {
-    width: 220px;
-    padding: 5px;
+    width: 230px;
+    border: none;
+    border-radius: 20px;
+    padding: 10px;
+  }
+
+  .addUser-form select:active,
+  .addUser-form select:focus {
+    border: none;
+    outline: none;
   }
 
   .addUser-form button {
     width: 100px;
+    padding-top: 10px;
+    padding-bottom: 10px;
   }
 
   .you {
@@ -316,12 +327,12 @@
   }
 
   .primary {
-    background-color: #222222;
+    background-color: #ececec;
     padding: 1rem;
-    margin-top: 5px;
+    margin-top: 10px;
     margin-bottom: 5px;
     border-radius: 1rem;
-    color: #e4e4e4;
+    color: #1d1d1d;
   }
 
   .primary > p {
