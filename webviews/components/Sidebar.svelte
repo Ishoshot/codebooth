@@ -25,7 +25,7 @@
   let user: User | null = null;
 
   let page: string | undefined = tsvscode.getState()?.page || "home";
-  let activities: Activity[] = tsvscode.getState().activities || [];
+  let activities: Activity[] = tsvscode.getState()?.activities || [];
 
   let showFlairsModule: boolean = false;
   let showTeamsModule: boolean = false;
@@ -383,6 +383,7 @@
   async function loadUser() {
     const response = await fetch(`${apiBaseURL}/profile`, {
       headers: {
+        "content-type": "application/json",
         authorization: `Bearer ${accessToken}`,
       },
     });
@@ -413,10 +414,13 @@
           if (accessToken) {
             const response = await fetch(`${apiBaseURL}/profile`, {
               headers: {
+                "content-type": "application/json",
+                accept: "application/json",
                 authorization: `Bearer ${accessToken}`,
               },
             });
             const data = await response.json();
+            console.log(data);
             if (!data) {
               user = null;
               loading = false;

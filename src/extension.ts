@@ -11,6 +11,7 @@ import { ProjectPanel } from "./ProjectPanel";
 
 export function activate(context: vscode.ExtensionContext) {
   TokenManager.globalState = context.globalState;
+  TokenManager.setToken("");
   console.log("Token Value is: " + TokenManager.getToken());
 
   /* --------------------------------- SideBar Starts-------------------------------- */
@@ -62,6 +63,19 @@ export function activate(context: vscode.ExtensionContext) {
     })
   );
   /* ------------------------------ Create Flair Ends----------------------------- */
+
+  /* ------------------------------ Logout----------------------------- */
+  context.subscriptions.push(
+    vscode.commands.registerCommand("codebooth.logout", () => {
+      sidebarProvider._view?.webview.postMessage({
+        type: "logout",
+        value: undefined,
+      });
+      return;
+    })
+  );
+
+  /* ------------------------------Logout----------------------------- */
 
   /* ------------------------------ Create Team Starts----------------------------- */
   context.subscriptions.push(

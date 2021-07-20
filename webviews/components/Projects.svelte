@@ -99,14 +99,14 @@
         {#if loading}
           <!-- Fetching Teams -->
           <div class="no-team-found">
-            <h3>Fetching Teams...</h3>
+            <h3>Fetching Projects...</h3>
           </div>
         {:else}
           <!-- Search Team -->
           <form class="search">
             <input
               type="search"
-              placeholder="Search For a Team"
+              placeholder="Search For a Project"
               bind:value={searchItem}
               on:keyup={() => {
                 filterTeams();
