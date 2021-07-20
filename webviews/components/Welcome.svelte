@@ -1,5 +1,5 @@
 <script lang="ts">
-  let foo = 200;
+  // let foo = 200;
 </script>
 
 <div id="page-wrapper">
@@ -16,11 +16,18 @@
 
   <!-- /* --------------------------- Hero --------------------------------- */ -->
   <section id="hero">
-    <div class="bg" />
-    <h4 class="line-1 anim-typewriter">
-      All the <span>code</span> you'll ever need awaits you at this
-      <span>booth</span> right here in VS Code
-    </h4>
+    <div class="codebooth-bg" />
+
+    <div class="introduction">
+      <h2>Hi, I'm CodeBooth and I reside in Visual Studio Code</h2>
+      <p>
+        I am aware you write a lot of code, and you just can't do without that
+        completely-personalized and templated code of yours. <br />
+        Say-no-more, I can help you with your personal code repository. Sounds cool
+        innit? Sure it does! 😃
+      </p>
+      <button type="button" class="learnMore secondary">Learn More</button>
+    </div>
   </section>
 
   <!-- /* --------------------------- Content --------------------------------- */ -->
@@ -40,7 +47,9 @@
         </div>
       </div>
       <div class="grid">
-        <div class="icon"><i class="fa fa-3x fa-laptop" /></div>
+        <div class="icon" style="margin-right:3rem;">
+          <i class="fa fa-3x fa-laptop" />
+        </div>
         <div class="desc">
           <h2>Centralized Workspace</h2>
           <p>
@@ -82,7 +91,6 @@
 
     <!-- /* --------------------------- Demo --------------------------------- */ -->
     <section id="demo">
-      <h2>DEMO:</h2>
       <!-- svelte-ignore a11y-missing-attribute -->
       <iframe
         width="100%"
@@ -94,13 +102,47 @@
       />
     </section>
 
+    <!-- /* --------------------------------- Pricing -------------------------------- */ -->
+    <section id="pricing">
+      <div class="product" id="tenor">
+        <div class="level">Code Hydrogen</div>
+        <h2>$600</h2>
+        <ol>
+          <li>Lorem ipsum.</li>
+          <li>Lorem ipsum.</li>
+          <li>Lorem ipsum dolor.</li>
+          <li>Lorem ipsum.</li>
+        </ol>
+      </div>
+      <div class="product" id="bass">
+        <div class="level">Code Helium</div>
+        <h2>$900</h2>
+        <ol>
+          <li>Lorem ipsum.</li>
+          <li>Lorem ipsum.</li>
+          <li>Lorem ipsum dolor.</li>
+          <li>Lorem ipsum.</li>
+        </ol>
+      </div>
+      <div class="product" id="valve">
+        <div class="level">Code Lithium</div>
+        <h2>$1200</h2>
+        <ol>
+          <li>Plays similar to a Trumpet</li>
+          <li>Great for Jazz Bands</li>
+          <li>Lorem ipsum dolor.</li>
+          <li>Lorem ipsum.</li>
+        </ol>
+      </div>
+    </section>
+
     <!-- /* --------------------------- Developer ---------------------------- */ -->
     <footer id="developer">
       <div class="profile-card">
         <div class="card-header">
           <div class="pic">
             <img
-              src="https://cactusthemes.com/blog/wp-content/uploads/2018/01/tt_avatar_small.jpg"
+              src="https://res.cloudinary.com/oluwatobi/image/upload/c_fit,w_500/v1625336372/codebooth/Oluwatobi_xejkx4.jpg"
               alt="avatar"
             />
           </div>

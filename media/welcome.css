@@ -2,54 +2,38 @@
   position: relative;
   overflow-x: hidden;
   height: 100vh;
-  overflow-y: scroll;
 }
-
-li {
-  list-style: none;
-}
-
-.nav-link {
-  color: #fff;
-}
-
-a {
-  color: #000;
-  text-decoration: none;
-}
-
-/** global classes styling **/
 
 .container {
-  max-width: 1000px;
-  width: 100%;
-  margin: 0 auto;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
 }
 
-.btn {
-  padding: 0 20px;
-  height: 40px;
-  font-size: 1em;
-  font-weight: 900;
-  text-transform: uppercase;
-  border: 3px black solid;
-  border-radius: 2px;
-  background: transparent;
-  cursor: pointer;
+@media (min-width: 768px) {
+  .container {
+    width: 750px;
+  }
 }
-
-.grid {
-  display: flex;
-  margin-top: 5rem;
+@media (min-width: 992px) {
+  .container {
+    width: 970px;
+  }
+}
+@media (min-width: 1200px) {
+  .container {
+    width: 1170px;
+  }
 }
 
 header {
   position: sticky;
   top: 0;
   min-height: 75px;
-  padding: 0px 20px;
+  padding: 0px;
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: center;
 }
 
@@ -57,10 +41,6 @@ header {
   header {
     flex-wrap: wrap;
   }
-}
-
-nav {
-  font-weight: 400;
 }
 
 @media (max-width: 650px) {
@@ -71,7 +51,7 @@ nav {
     flex-direction: column;
     align-items: center;
     text-align: center;
-    padding: 0 50px;
+    padding: 0px;
   }
   nav li {
     padding-bottom: 5px;
@@ -79,7 +59,8 @@ nav {
 }
 
 nav > ul {
-  width: 100vw;
+  width: calc(100vw - 60px);
+  padding: 0px;
   display: flex;
   flex-direction: row;
   justify-content: space-around;
@@ -91,47 +72,73 @@ nav > ul {
   }
 }
 
+li {
+  list-style: none;
+}
+
+.nav-link {
+  font-size: 1.2rem;
+}
+
+a {
+  text-decoration: none;
+}
+
 #hero {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  margin-top: 20px;
 }
 
-.bg {
-  /* background: url('https://res.cloudinary.com/oluwatobi/image/upload/v1614896170/codebooth/codebooth_zsctvo.gif'); */
-  background: url('https://res.cloudinary.com/oluwatobi/image/upload/v1614897584/codebooth/codebooth__yzcphj.gif');
-  width: 80vw;
-  height: 50vh;
+.codebooth-bg {
+  background: url('https://res.cloudinary.com/oluwatobi/image/upload/c_crop,h_300,w_300/v1626728708/codebooth/CodeBooth_Logo_-_Trans_bg_eqq4za.png');
+  width: 300px;
+  height: 300px;
   background-position: center;
   background-size: cover;
+  margin-top: 2.5rem;
+  margin-bottom: 2.5rem;
 }
 
-#hero > h1 {
-  font-size: 2rem;
-  letter-spacing: 0.6rem;
-  margin-bottom: 20px;
-  word-wrap: break-word;
+.introduction h2 {
+  font-size: 2.5rem;
 }
 
-@media (max-width: 650px) {
-  #hero {
-    margin-top: 70px;
+.introduction p {
+  margin-top: 1.5rem;
+  font-size: 1.1rem;
+}
+
+@media (max-width: 800px) {
+  .introduction p {
+    text-align: left;
   }
 }
 
+.introduction .learnMore {
+  width: 150px;
+  margin-top: 1.5rem;
+  padding-top: 0.8rem;
+  padding-bottom: 0.8rem;
+}
+
 #features {
-  margin-top: 30px;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.grid {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 5rem;
 }
 
 #features .icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 20vw;
   color: #ff8c00;
+  margin-right: 4rem;
 }
 
 @media (max-width: 550px) {
@@ -144,12 +151,9 @@ nav > ul {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  width: 80vw;
-  padding: 5px;
 }
 
 .desc h2 {
-  color: #fff;
   margin-bottom: 1rem;
 }
 
@@ -183,7 +187,7 @@ nav > ul {
 }
 
 #pricing {
-  margin-top: 60px;
+  margin-top: 7rem;
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -195,14 +199,13 @@ nav > ul {
   align-items: center;
   text-align: center;
   width: calc(100% / 3);
-  margin: 10px;
-  border: 1px solid #000;
-  border-radius: 3px;
+  margin: 1rem;
+  box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.2);
+  border-radius: 15px;
 }
 
 .product > .level {
-  background-color: #ddd;
-  color: black;
+  background: var(--vscode-button-background);
   padding: 15px 0;
   width: 100%;
   text-transform: uppercase;
@@ -221,18 +224,6 @@ nav > ul {
   padding: 5px 0;
 }
 
-.product > button {
-  border: 0;
-  margin: 15px 0;
-  background-color: #ff8c00;
-  font-weight: 400;
-}
-
-.product > button:hover {
-  background-color: ff8c00;
-  transition: background-color 1s;
-}
-
 @media (max-width: 800px) {
   #pricing {
     flex-direction: column;
@@ -241,7 +232,7 @@ nav > ul {
     max-width: 300px;
     width: 100%;
     margin: 0 auto;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
   }
 }
 
@@ -250,47 +241,7 @@ footer {
   background-color: inherit;
   display: flex;
   flex-direction: row;
-  justify-content: flex-end;
-}
-
-/* TypeWriting */
-.line-1 {
-  margin-top: 30px;
-  width: 800px;
-  border-right: 2px solid #fff;
-  font-size: 170%;
-  text-align: center;
-  white-space: nowrap;
-  overflow: hidden;
-  color: #fff;
-  transform: translateY(-50%);
-}
-
-.line-1 span {
-  color: #0e639c;
-}
-
-/* Animation */
-.anim-typewriter {
-  animation: typewriter 4s steps(44) 1s 1 normal both,
-    blinkTextCursor 500ms steps(44) infinite normal;
-}
-
-@keyframes typewriter {
-  from {
-    width: 0;
-  }
-  to {
-    width: 800px;
-  }
-}
-@keyframes blinkTextCursor {
-  from {
-    border-right-color: #fff;
-  }
-  to {
-    border-right-color: transparent;
-  }
+  justify-content: center;
 }
 
 /* Developer */
@@ -301,13 +252,15 @@ footer {
   border-radius: 8px;
   overflow: hidden;
 }
+
 .card-header {
   background: inherit;
   padding: 30px 10px;
 }
+
 .pic {
   display: inline-block;
-  padding: 8px;
+  padding: 3px;
   background: linear-gradient(130deg, #0e639c, #ff8c00);
   margin: auto;
   border-radius: 50%;
@@ -315,13 +268,12 @@ footer {
   animation: animated-gradient 2s linear infinite;
 }
 .pic img {
-  width: 100px;
+  width: 120px;
   display: block;
-  height: 100px;
+  height: 120px;
   border-radius: 50%;
 }
 .name {
-  color: #f2f2f2;
   font-size: 28px;
   font-weight: 600;
   margin: 10px 0;
