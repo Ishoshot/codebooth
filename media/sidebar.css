@@ -5,9 +5,45 @@ body {
   overflow-x: hidden;
 }
 
+.side-wrapper {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  padding: 0px;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow-y: auto;
+  margin-top: 0%;
+}
+
+.chart {
+  background-color: #ececec;
+  padding-left: 10px;
+  padding-right: 10px;
+  height: 350px;
+  border-bottom-right-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+
+.active {
+  color: #0e639c;
+}
+
+.sticky-foot i {
+  font-size: 2rem;
+}
+
+.space {
+  height: 100px;
+}
+
+.danger {
+  color: red;
+}
+
 .sticky-foot {
   position: fixed;
-  background-color: #1d1d1d;
+  background-color: var(--vscode-editor-background);
   width: 100%;
   bottom: 0;
 }
@@ -18,8 +54,8 @@ body {
   flex-wrap: wrap;
   justify-content: space-around;
   height: 4rem;
+  color: var(--vscode-button-secondaryForeground);
   align-items: flex-end;
-  color: #fff;
   padding-bottom: 1rem;
 }
 
@@ -30,7 +66,7 @@ body {
 }
 
 .nav > span:hover {
-  color: #0e639c;
-  transform: scale(1.1);
+  color: var(--vscode-button-secondaryHoverBackground);
+  transform: scale(1.15);
   font-weight: bold;
 }

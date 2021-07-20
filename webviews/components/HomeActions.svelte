@@ -74,6 +74,10 @@
 </div>
 
 <style scoped>
+  button {
+    outline: none !important;
+  }
+
   .actions {
     display: flex;
     flex-direction: column;
@@ -104,19 +108,6 @@
     outline: none !important;
     box-shadow: none !important;
   }
-  /* 
-  .btnStyle-One {
-    background-color: transparent;
-    border: 1px solid #ececec;
-    color: #ececec;
-    transition: 0.5s all;
-  }
-
-  .btnStyle-One:hover {
-    background-color: #ececec;
-    border: 1px solid #ececec;
-    color: #1a1a1a;
-  } */
 
   .btnStyle-Two {
     background-color: #ececec;
@@ -128,19 +119,6 @@
     background-color: #0e639c;
     color: #ececec;
   }
-
-  /* .btnStyle-Three {
-    border: 1px solid #1186d4;
-    background-color: transparent;
-    color: #1186d4 !important;
-    transition: 0.5s all;
-  }
-
-  .btnStyle-Three:hover {
-    border: 1px solid #0e639c;
-    background-color: #0e639c;
-    color: #fff !important;
-  } */
 
   .btnStyle-Four {
     background-color: #0e639c;

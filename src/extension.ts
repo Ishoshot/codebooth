@@ -11,7 +11,6 @@ import { ProjectPanel } from "./ProjectPanel";
 
 export function activate(context: vscode.ExtensionContext) {
   TokenManager.globalState = context.globalState;
-  TokenManager.setToken("");
   console.log("Token Value is: " + TokenManager.getToken());
 
   /* --------------------------------- SideBar Starts-------------------------------- */

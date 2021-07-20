@@ -1,3 +1,6 @@
+@import url('https://cdn.jsdelivr.net/npm/fontisto@v3.0.4/css/fontisto/fontisto.min.css');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css');
+
 :root {
   --container-paddding: 20px;
   --input-padding-vertical: 6px;
