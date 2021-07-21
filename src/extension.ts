@@ -44,14 +44,25 @@ export function activate(context: vscode.ExtensionContext) {
   /* ------------------------------ Create Flair Starts----------------------------- */
   context.subscriptions.push(
     vscode.commands.registerCommand("codebooth.createFlair", () => {
-      let options: vscode.InputBoxOptions = {
-        prompt: "Create Flair - ",
-        placeHolder: "Enter Flair here... e.g php || html || java || react",
+      let options = {
+        ignoreFocusOut: true,
+        title: "Proceed to Create a New Flair",
+        prompt: "Note - ",
+        placeHolder: "Enter Flair here.. e.g php || java || react",
       };
 
       vscode.window.showInputBox(options).then((value) => {
-        if (!value) return;
-        vscode.window.showInformationMessage("Creating Flair: " + value);
+        if (!value) {
+          vscode.window.showErrorMessage(
+            "Create Flair Failed - You didn't provide an imput",
+            "Close"
+          );
+          return;
+        }
+        vscode.window.showInformationMessage(
+          "Create Flair: Creation of Flair '" + value + "' is being processed",
+          "Close"
+        );
 
         sidebarProvider._view?.webview.postMessage({
           type: "new-flair",
@@ -62,19 +73,6 @@ export function activate(context: vscode.ExtensionContext) {
     })
   );
   /* ------------------------------ Create Flair Ends----------------------------- */
-
-  /* ------------------------------ Logout----------------------------- */
-  context.subscriptions.push(
-    vscode.commands.registerCommand("codebooth.logout", () => {
-      sidebarProvider._view?.webview.postMessage({
-        type: "logout",
-        value: undefined,
-      });
-      return;
-    })
-  );
-
-  /* ------------------------------Logout----------------------------- */
 
   /* ------------------------------ Create Team Starts----------------------------- */
   context.subscriptions.push(

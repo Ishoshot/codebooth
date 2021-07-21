@@ -13,7 +13,6 @@
 		"onCommand:codebooth.Welcome",
 		"onCommand:codebooth.Users",
 		"onCommand:codebooth.createFlair",
-		"onCommand:codebooth.logout",
 		"onCommand:codebooth.createTeam",
 		"onCommand:codebooth.manageTeams",
 		"onCommand:codebooth.createProject",
@@ -54,11 +53,6 @@
 				"category": "VS CodeBooth",
 				"command": "codebooth.Users",
 				"title": "CodeBooth Users"
-			},
-			{
-				"category": "VS CodeBooth",
-				"command": "codebooth.logout",
-				"title": "CodeBooth Logout"
 			},
 			{
 				"category": "VS CodeBooth",

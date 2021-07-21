@@ -1,4 +1,11 @@
-import type { Flair } from "../../codebooth-api/src/entities/Flair";
+export type Flair = {
+  id: string;
+  name: string;
+  user_id: string;
+  created_at: Date;
+  updated_at: Date;
+  deleted_at: Date | null;
+};
 
 export type User = {
   id: string;

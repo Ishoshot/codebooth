@@ -1,16 +1,16 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { createEventDispatcher } from "svelte";
-  import type { User } from "../../types";
+  import type { Flair, User } from "../../types";
 
-  export let user: User;
+  export let flairs: Flair[];
   export let creatingFlair: boolean;
 
   const dispatch = createEventDispatcher();
 
   let flairSynopsis: boolean = false;
 
-  /* ------------------------------ Show Flair Dialog Box ------------------------------ */
+  // Show Flair Dialog Box
   function showFlairDialog() {
     tsvscode.postMessage({
       type: "create-flair",
@@ -33,30 +33,35 @@
     <h3>
       <span class="fa fa-plus" />My Flairs
       <i
-        class="fa fa-question"
+        class={flairSynopsis
+          ? "fa fa-caret-up question"
+          : "fa fa-caret-down question"}
         style="margin-left: 10px"
         on:click={() => {
           flairSynopsis = !flairSynopsis;
         }}
       />
-      {#if flairSynopsis}
-        <!-- Show Flair Synopsis -->
-        <br />
-        <p class="synopsis">
-          Flairs are identified as your favourite programming languages. They
-          basically describe you and they are visible to the public.
-        </p>
-      {/if}
     </h3>
+
+    {#if flairSynopsis}
+      <!-- Show Flair Synopsis -->
+      <br />
+      <p class="synopsis">
+        A Flair represents one of your fav programming languages. Basically, It
+        describes you and is visible to the public.
+      </p>
+    {/if}
   </div>
   <div class="inner">
     <div class="flairs-row">
-      {#each user.__flairs__.reverse() as flair}
+      {#each flairs as flair}
         <!-- Display Flairs -->
-        <span class="flairItem">{flair.name}</span>
+        <span class="flairItem"
+          >{flair.name} <i class="delete fa fa-trash" />
+        </span>
       {:else}
         <!-- Flair's Empty -->
-        <h4>Oops 😔 ! No Flair found...</h4>
+        <h4>Oops! 😔 No Flair(s) found...</h4>
       {/each}
     </div>
 
@@ -67,7 +72,7 @@
     {:else}
       <!-- Button to Trigger Dialog -->
       <button class="addFlair" on:click={() => showFlairDialog()}
-        >Add Flair</button
+        >Add new Flair</button
       >
     {/if}
   </div>
@@ -99,10 +104,6 @@
     align-items: start;
   }
 
-  .wrapper h4 {
-    color: #fff;
-  }
-
   .wrapper h3 span {
     color: #ff8c00;
     margin-right: 6px;
@@ -110,30 +111,39 @@
   }
 
   .head {
-    margin-bottom: 4%;
+    margin-bottom: 0.5rem;
+  }
+
+  .question {
+    cursor: pointer;
   }
 
   .synopsis {
-    margin-top: 10px;
-    color: #f9f9f9;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
   }
 
   .addFlair {
-    margin-top: 7%;
+    margin-top: 2rem;
   }
 
   .flairItem {
-    background-color: #cfcfcf;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    padding-left: 12px;
-    padding-right: 12px;
-    color: #111;
-    /* margin-left: 10px; */
-    margin-right: 10px;
-    border-radius: 20px;
-    margin-top: 10px;
+    background-color: var(--vscode-button-secondaryBackground);
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    padding-left: 1.1rem;
+    padding-right: 1.1rem;
+    margin-right: 0.6rem;
+    border-radius: 1rem;
+    margin-top: 1rem;
     cursor: pointer;
+  }
+
+  .flairItem:hover {
+    background: var(--vscode-button-secondaryHoverBackground);
+  }
+
+  .delete {
+    margin-left: 0.3rem;
+    color: #c02222;
   }
 </style>

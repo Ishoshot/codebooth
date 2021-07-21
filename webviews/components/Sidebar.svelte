@@ -1,6 +1,12 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import type { Activity, Team, TeamMember, User } from "../types";
+  import type {
+    Activity,
+    Team,
+    TeamMember,
+    User,
+    Flair as FlairData,
+  } from "../types";
   import Flair from "./local/Flair.svelte";
   import Radar from "svelte-chartjs/src/Radar.svelte";
   import HomeActions from "./HomeActions.svelte";
@@ -9,6 +15,7 @@
   // import Todos from "./Todos.svelte";
 
   let flair: "";
+  let flairs: FlairData[];
   let creatingFlair = false;
 
   let team: { teamName: string; teamDesc: string };
@@ -60,9 +67,91 @@
     }
   }
 
+  // Get User's profile
+  async function getUserProfile() {
+    if (accessToken) {
+      const response = await fetch(`${apiBaseURL}/profile`, {
+        headers: {
+          "content-type": "application/json",
+          accept: "application/json",
+          authorization: `Bearer ${accessToken}`,
+        },
+      });
+      const data = await response.json();
+      console.log(data);
+      if (!data) {
+        user = null;
+        loading = false;
+        return;
+      }
+      user = data.user;
+      loading = false;
+    } else {
+      loading = false;
+    }
+  }
+
   // Toggle Flair Module Visibility
   function showFlairs() {
     showFlairsModule = !showFlairsModule;
+  }
+
+  // Function to Get User's Flairs
+  async function getFlairs() {
+    const response = await fetch(`${apiBaseURL}/user/flairs`, {
+      headers: {
+        accept: "application/json",
+        "content-type": "application/json",
+        authorization: `Bearer ${accessToken}`,
+      },
+    });
+    const data = await response.json();
+    console.log(data);
+    if (!data) {
+      flairs = [];
+      return;
+    }
+    flairs = data.flairs;
+  }
+
+  // Function to Create Flair
+  async function createFlair() {
+    creatingFlair = true;
+    const response = await fetch(`${apiBaseURL}/user/flair`, {
+      method: "POST",
+      body: JSON.stringify({
+        name: flair,
+      }),
+      headers: {
+        "content-type": "application/json",
+        accept: "application/json",
+        authorization: `Bearer ${accessToken}`,
+      },
+    });
+    const data: any = await response.json();
+    if (data.flair === null) {
+      tsvscode.postMessage({
+        type: "onError",
+        value:
+          "Error Encountered While Creating Flair. Possible Reason(s): Limit [5 flairs] reached OR Flair alraedy exists for you. Also ensure you're providing a valid input.",
+      });
+      creatingFlair = false;
+    } else {
+      // Append to Existing flairs
+      flairs = [...flairs, data.flair];
+      // Log Activity
+      const logData = {
+        title: "Flair Created",
+        flair,
+      };
+      // logActivity(logData);
+      tsvscode.postMessage({
+        type: "onInfo",
+        value: `Your flair: ${data.flair.name} was created cuccessfully`,
+      });
+
+      creatingFlair = false;
+    }
   }
 
   onMount(async () => {
@@ -72,26 +161,8 @@
         case "token":
           {
             accessToken = message.value;
-            if (accessToken) {
-              const response = await fetch(`${apiBaseURL}/profile`, {
-                headers: {
-                  "content-type": "application/json",
-                  accept: "application/json",
-                  authorization: `Bearer ${accessToken}`,
-                },
-              });
-              const data = await response.json();
-              console.log(data);
-              if (!data) {
-                user = null;
-                loading = false;
-                return;
-              }
-              user = data.user;
-              loading = false;
-            } else {
-              loading = false;
-            }
+            await getUserProfile();
+            await getFlairs();
           }
           break;
 
@@ -99,6 +170,13 @@
           {
             accessToken = "";
             user = null;
+          }
+          break;
+
+        case "new-flair":
+          {
+            flair = message.value;
+            await createFlair();
           }
           break;
       }
@@ -142,7 +220,7 @@
         <HomeActions on:showFlairs={() => showFlairs()} />
 
         {#if showFlairsModule}
-          <Flair {user} {creatingFlair} />
+          <Flair {flairs} {creatingFlair} />
         {/if}
       {:else if page === "profile"}
         <!--  -->

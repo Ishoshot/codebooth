@@ -514,7 +514,7 @@
         />
 
         {#if showFlairsModule}
-          <Flair {user} {creatingFlair} />
+          <!-- <Flair {user} {creatingFlair} /> -->
         {/if}
 
         {#if showTeamsModule}
