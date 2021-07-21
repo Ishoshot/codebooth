@@ -15,14 +15,12 @@ export function activate(context: vscode.ExtensionContext) {
 
   /* --------------------------------- SideBar Starts-------------------------------- */
   const sidebarProvider = new SidebarProvider(context.extensionUri);
-
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider(
       "codebooth-sidebar",
       sidebarProvider
     )
   );
-
   /* --------------------------------- SideBar Ends-------------------------------- */
 
   /* ------------------------------ Welcome Panel Starts----------------------------- */
@@ -54,14 +52,12 @@ export function activate(context: vscode.ExtensionContext) {
       vscode.window.showInputBox(options).then((value) => {
         if (!value) {
           vscode.window.showErrorMessage(
-            "Create Flair Failed - You didn't provide an imput",
-            "Close"
+            "Create Flair Failed - You didn't provide an imput"
           );
           return;
         }
         vscode.window.showInformationMessage(
-          "Create Flair: Creation of Flair '" + value + "' is being processed",
-          "Close"
+          "Create Flair: Creation of Flair '" + value + "' is being processed"
         );
 
         sidebarProvider._view?.webview.postMessage({

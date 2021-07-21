@@ -10,12 +10,17 @@
 
   let flairSynopsis: boolean = false;
 
-  // Show Flair Dialog Box
+  // Tell SideBarProvider to Show Flair Dialog Box
   function showFlairDialog() {
     tsvscode.postMessage({
       type: "create-flair",
       value: undefined,
     });
+  }
+
+  // Send Delete Flair Action to SideBar
+  function deleteFlair(flair: any) {
+    dispatch("deleteflair", flair);
   }
 
   onMount(async () => {
@@ -56,8 +61,12 @@
     <div class="flairs-row">
       {#each flairs as flair}
         <!-- Display Flairs -->
-        <span class="flairItem"
-          >{flair.name} <i class="delete fa fa-trash" />
+        <span class="flairItem">
+          {flair.name}
+          <i
+            class="delete fa fa-trash"
+            on:click={() => deleteFlair(flair.id)}
+          />
         </span>
       {:else}
         <!-- Flair's Empty -->
@@ -68,7 +77,9 @@
     <!-- Add New Flair -->
     {#if creatingFlair}
       <!-- Flair Loading -->
-      <i class="fa fa-spinner fa-spin fa-fw" />
+      <div class="load">
+        <i class="text-center fa fa-spinner fa-spin" />
+      </div>
     {:else}
       <!-- Button to Trigger Dialog -->
       <button class="addFlair" on:click={() => showFlairDialog()}
@@ -140,6 +151,14 @@
 
   .flairItem:hover {
     background: var(--vscode-button-secondaryHoverBackground);
+  }
+
+  .load {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
   }
 
   .delete {

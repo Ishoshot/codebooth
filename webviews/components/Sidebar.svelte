@@ -129,27 +129,77 @@
       },
     });
     const data: any = await response.json();
-    if (data.flair === null) {
+    // console.log(response);
+    if (response.status == 400) {
       tsvscode.postMessage({
         type: "onError",
         value:
-          "Error Encountered While Creating Flair. Possible Reason(s): Limit [5 flairs] reached OR Flair alraedy exists for you. Also ensure you're providing a valid input.",
+          "Error Encountered While Creating Flair. Possible Reason(s): Limit [5 flairs] reached.",
       });
       creatingFlair = false;
+      return;
+    }
+    if (response.status == 422) {
+      tsvscode.postMessage({
+        type: "onError",
+        value:
+          "Error Encountered While Creating Flair. Possible Reason(s): Flair already exists for you OR Ensure you're providing a valid input.",
+      });
+      creatingFlair = false;
+      return;
+    }
+    // Append to Existing flairs
+    flairs = [...flairs, data.flair];
+    // Log Activity
+    const logData = {
+      title: "Flair Created",
+      flair,
+    };
+    // logActivity(logData);
+    tsvscode.postMessage({
+      type: "onInfo",
+      value: `Your flair: ${data.flair.name} was created successfully`,
+    });
+
+    creatingFlair = false;
+  }
+
+  // Function to Delete Flair
+  async function deleteFlair(event: CustomEvent<any>) {
+    creatingFlair = true;
+    let id = event.detail;
+    const response = await fetch(`${apiBaseURL}/user/flair/${id}`, {
+      method: "DELETE",
+      headers: {
+        "content-type": "application/json",
+        accept: "application/json",
+        authorization: `Bearer ${accessToken}`,
+      },
+    });
+    const data: any = await response.json();
+    console.log(data);
+
+    if (response.status !== 200) {
+      tsvscode.postMessage({
+        type: "onError",
+        value:
+          "Error Encountered While Deleting Flair. Possible Solution(s): Try Again after a while OR Please create an Issue on GitHub",
+      });
+      creatingFlair = false;
+      return;
     } else {
-      // Append to Existing flairs
-      flairs = [...flairs, data.flair];
+      // Remove from to Existing flairs
+      flairs = flairs.filter((inFlair) => inFlair.id != data.flair.id);
       // Log Activity
       const logData = {
-        title: "Flair Created",
+        title: "Flair Deleted",
         flair,
       };
       // logActivity(logData);
       tsvscode.postMessage({
         type: "onInfo",
-        value: `Your flair: ${data.flair.name} was created cuccessfully`,
+        value: `Your flair: ${data.flair.name} was deleted successfully`,
       });
-
       creatingFlair = false;
     }
   }
@@ -220,7 +270,11 @@
         <HomeActions on:showFlairs={() => showFlairs()} />
 
         {#if showFlairsModule}
-          <Flair {flairs} {creatingFlair} />
+          <Flair
+            {flairs}
+            {creatingFlair}
+            on:deleteflair={(event) => deleteFlair(event)}
+          />
         {/if}
       {:else if page === "profile"}
         <!--  -->
