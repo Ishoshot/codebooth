@@ -112,12 +112,6 @@ a {
   font-size: 1.1rem;
 }
 
-@media (max-width: 800px) {
-  .introduction p {
-    text-align: left;
-  }
-}
-
 .introduction .learnMore {
   width: 150px;
   margin-top: 1.5rem;

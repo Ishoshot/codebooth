@@ -3,8 +3,58 @@
   import type { User, Activity, TeamMember } from "../types";
 
   export let accessToken: string;
-  export let user: User;
+  // export let user: User;
   export let activities: Activity[];
+
+  // Function to Mark Activity As Read
+  async function markAsRead(id: string) {
+    const response = await fetch(`${apiBaseURL}/user/activity/${id}`, {
+      method: "PUT",
+      headers: {
+        "content-type": "application/json",
+        accept: "application/json",
+        authorization: `Bearer ${accessToken}`,
+      },
+    });
+    const data: any = await response.json();
+    console.log(data);
+    if (response.status !== 200) {
+      tsvscode.postMessage({
+        type: "onError",
+        value: "Oops! Error Encountered - Cannot Mark Activity as Read",
+      });
+      return;
+    }
+
+    // Update Activities
+    activities = activities.map((activity) =>
+      activity.id === data.activity.id
+        ? { ...activity, read_at: true }
+        : activity
+    );
+
+    tsvscode.postMessage({
+      type: "onInfo",
+      value: `Activity Marked as Read Successfully`,
+    });
+  }
+
+  // Format Date and Display Activity Date
+  function renderActivityDate(val: any) {
+    var date = new Date();
+    var millis = date.valueOf() - new Date(val).valueOf();
+    var hour = Math.floor((millis / 3600 / 1000) % 24);
+    var minute = Math.floor((millis / 60000) % 60);
+    var seconds = ((millis % 60000) / 1000).toFixed(0);
+
+    if (hour >= 1 && hour <= 24) {
+      return hour + " hr" + " " + minute + " min";
+    } else if (hour == 0 && minute >= 1) {
+      return minute + " min";
+    } else if (minute == 0 && hour == 0) {
+      return seconds + " sec";
+    }
+  }
 
   import { createEventDispatcher } from "svelte";
   const dispatch = createEventDispatcher();
@@ -16,397 +66,106 @@
       }
     });
   });
-
-  /* ---------------------- Dispatch Remove User form Team ---------------------- */
-  async function leaveTeam(team: TeamMember) {
-    // Get Team
-    const response = await fetch(`${apiBaseURL}/team/get/${team.team_id}`, {
-      method: "GET",
-      headers: {
-        "content-type": "application/json",
-        authorization: `Bearer ${accessToken}`,
-      },
-    });
-    const res = await response.json();
-    if (res.team == null) {
-      tsvscode.postMessage({
-        type: "onError",
-        value:
-          "Oops! Error Encountered. Possible Reason: Couldn't Fetch Team. Contact Support",
-      });
-      return;
-    } else {
-      const data = {
-        teamMember: team,
-        team: res.team,
-      };
-      dispatch("leaveteam", data);
-    }
-  }
-
-  /* ---------------------- Dispatch Update Team ---------------------- */
-  async function updateTeamRequest(team: TeamMember, type: number) {
-    let data;
-
-    // Get Team
-    const response = await fetch(`${apiBaseURL}/team/get/${team.team_id}`, {
-      method: "GET",
-      headers: {
-        "content-type": "application/json",
-        authorization: `Bearer ${accessToken}`,
-      },
-    });
-    const res = await response.json();
-    if (res.team == null) {
-      tsvscode.postMessage({
-        type: "onError",
-        value:
-          "Oops! Error Encountered. Possible Reason: Couldn't Fetch Team. Contact Support",
-      });
-      return;
-    } else {
-      if (type == 0) {
-        data = {
-          id: team.id,
-          team: res.team,
-          status: "rejected",
-          request_seen: true,
-        };
-      } else if (type == 1) {
-        data = {
-          id: team.id,
-          team: res.team,
-          status: "accepted",
-          request_seen: true,
-        };
-      } else {
-        data = {
-          id: team.id,
-          team: res.team,
-          status: "pending",
-          request_seen: true,
-        };
-      }
-    }
-    dispatch("updateteamrequest", data);
-  }
-
-  /* ---------------------- Format Date to Readable form ---------------------- */
-  function renderDate(val: string | number | Date): string {
-    const date = new Date(val);
-    return date.toDateString() + " @ " + date.toLocaleTimeString();
-  }
-
-  /* -------------------------- Dispatch Mark as Read ------------------------- */
-  function markAsRead(id: number) {
-    dispatch("markasread", id);
-  }
-
-  /* ---------------------- Format Date and Display Activity Date ---------------------- */
-  function renderActivityDate(val: number) {
-    var date = new Date();
-    var millis = date.valueOf() - val;
-    var hour = Math.floor((millis / 3600 / 1000) % 24);
-    var minute = Math.floor((millis / 60000) % 60);
-    var seconds = ((millis % 60000) / 1000).toFixed(0);
-
-    if (hour >= 1 && hour <= 24) {
-      return hour + " hr";
-    } else if (hour == 0 && minute >= 1) {
-      return minute + " min";
-    } else if (minute == 0 && hour == 0) {
-      return seconds + " sec";
-    }
-  }
 </script>
 
 <!-- svelte-ignore missing-declaration -->
 <div class="notifications">
-  <!-- {apiBaseURL} -->
-  <!-- {serviceToken} -->
-  <div class="team-request-in">
-    <h3>
-      Incoming Team Requests
-      {#if user.__teamsIn__.filter((t) => {
-        return t.status == "pending" && t.request_seen == false;
-      }).length > 0}
-        <span class="red">
-          - {user.__teamsIn__.filter((t) => {
-            return t.status == "pending" && t.request_seen == false;
-          }).length}</span
-        >
-      {/if}
-    </h3>
-  </div>
-
-  <div class="featuredTeams-container">
-    {#each user.__teamsIn__
-      .filter((t) => {
-        return t.status == "pending";
-      })
-      .reverse() as teamIn}
-      <div
-        class={teamIn.request_seen
-          ? "featuredTeam read"
-          : "featuredTeam unread"}
-      >
-        <div class="featuredTeam-icon">
-          <i class="icon-project fa fa-user-friends" />
-        </div>
-        <div
-          class="featuredTeam-message"
-          on:click={() => {
-            updateTeamRequest(teamIn, 3);
-          }}
-        >
-          <h2>{teamIn.team_name}</h2>
-          <p>You have been invited to join this team.</p>
-        </div>
-        <div class="featuredTeam-col">
-          <span
-            class="accept fa fa-check-circle"
-            on:click={() => {
-              updateTeamRequest(teamIn, 1);
-            }}
-          />
-          <span
-            class="reject fa fa-times-circle"
-            on:click={() => {
-              updateTeamRequest(teamIn, 0);
-            }}
-          />
-        </div>
-      </div>
-    {:else}
-      <p class="error">
-        You have not been added to any Team lately. Your Pending Incoming Team
-        Requests will display here..
-      </p>
-    {/each}
-  </div>
-  <!-- Incoming Team Request Ends -->
-
-  <!-- Outgoing Team Request  -->
-  <!-- <div class="team-request-out">
-    <h3>Outgoing Team Requests</h3>
-    {#each user.__teamsIn__.filter((t) => {
-      return t.status == "pending";
-    }) as teamIn}
-      <ul>
-        <li>{teamIn.team_name}</li>
-      </ul>
-    {:else}
-      <p class="error">
-        You have not been added to any Team lately. Pending Team Requests will
-        display here..
-      </p>
-    {/each}
-  </div> -->
-  <!-- Outgoing Team Request Ends  -->
-
   <!-- Recent Activities -->
   <div class="recent-activities">
-    <h3>
-      Recent Activities
-      {#if activities.filter((a) => a.read == false).length > 0}
-        <span> - {activities.filter((a) => a.read == false).length}</span>
-      {/if}
-    </h3>
-  </div>
+    <h3>Your Recent Activities</h3>
+    {#if activities.filter((a) => a.read_at == false).length > 0}
+      <p class="unreadActivities">
+        You have {activities.filter((a) => a.read_at == false).length} / {activities.length}
+        unread activities
+      </p>
+    {/if}
 
-  <div class="activities-container">
-    {#each activities as activity, id}
-      {#if activity.owner === user.id && id <= 14}
+    <div class="activities-container">
+      {#each activities as activity, id}
         <div
-          class={activity.read ? "activity read" : "activity unread"}
-          on:click={() => markAsRead(id)}
+          class={activity.read_at ? "activity read" : "activity unread"}
+          on:click={() => {
+            if (!activity.read_at) {
+              markAsRead(activity.id);
+            }
+          }}
         >
           <div class="activity-icon">
-            {#if activity.flair !== undefined}
-              <i class="icon-flair fa fa-code" />
-            {/if}
-            {#if activity.team !== undefined}
-              <i class="icon-team fa fa-user-friends" />
-            {/if}
-            {#if activity.project !== undefined}
-              <i class="icon-project fa fa-project-diagram" />
-            {/if}
-            {#if activity.teamRequest !== undefined}
-              {#if activity.teamRequest.status == "accepted"}
-                <i class="icon-project fa fa-check-circle" />
-              {/if}
-              {#if activity.teamRequest.status == "rejected"}
-                <i class="icon-danger fa fa-times-circle" />
-              {/if}
-            {/if}
+            <i class="icon-flair fa fa-code" />
           </div>
+
           <div class="activity-message">
-            {#if activity.flair !== undefined}
-              <h3>{activity.title}</h3>
-              <p>
-                Flair Name <span>{activity.flair}</span> was created successfully.
-              </p>
-            {/if}
-            {#if activity.team !== undefined}
-              <h3>{activity.title}</h3>
-              <p>
-                Team Name <span>{activity.team}</span> was created successfully.
-              </p>
-            {/if}
-            {#if activity.project !== undefined}
-              <h3>{activity.title}</h3>
-              <p>
-                Project Name <span>{activity.project}</span> was created successfully.
-              </p>
-            {/if}
-            {#if activity.teamRequest !== undefined}
-              <h3>{activity.title}</h3>
-              <p>
-                You <span>{activity.teamRequest.status}</span> a request to join
-                team: <span>{activity.teamRequest.team_name}.</span>
-              </p>
-            {/if}
+            <h3>{activity.title}</h3>
+            <p>
+              {activity.description}
+            </p>
           </div>
+
           <div class="activity-date">
-            <span>{renderActivityDate(activity.date)} ago</span>
+            <span>{renderActivityDate(activity.created_at)} ago</span>
           </div>
         </div>
-      {/if}
-    {:else}
-      <p class="error">No Recent Activity</p>
-    {/each}
+      {:else}
+        <p class="error">No Recent Activity</p>
+      {/each}
+    </div>
   </div>
-  <!-- Recent Activities Ends -->
-
-  <!-- Featured Teams -->
-  <div class="featured-teams">
-    <h3>Featured Teams</h3>
-  </div>
-
-  <div class="featuredTeams-container">
-    {#each user.__teamsIn__
-      .filter((t) => {
-        return t.status == "accepted";
-      })
-      .reverse() as teamIn}
-      <div class="featuredTeam">
-        <div class="featuredTeam-icon">
-          <i class="icon-team fa fa-user-friends" />
-        </div>
-        <div class="featuredTeam-message">
-          <h2>{teamIn.team_name}</h2>
-          <p>
-            joined: <span>{renderDate(teamIn.updated_at)}.</span>
-          </p>
-        </div>
-        <div class="featuredTeam-leave">
-          <span
-            class="fa fa-sign-out-alt"
-            on:click={() => {
-              leaveTeam(teamIn);
-            }}
-          />
-        </div>
-      </div>
-    {:else}
-      <p class="error">
-        You are not part of any team yet, Teams which you're a member of, will
-        display here.
-      </p>
-    {/each}
-  </div>
-
-  <!-- Featured Teams Ends -->
 </div>
 
 <style scoped>
   .notifications {
     display: flex;
-    padding-left: 3px;
+    padding-left: 0.5rem;
     flex-direction: column;
     justify-content: start;
   }
 
-  .error {
-    color: #ff8c00;
-  }
-
-  .team-request-in {
-    margin-top: 10px;
-  }
-
-  .team-request-in h3 {
-    margin-bottom: 10px;
-    font-weight: bold;
-  }
-
-  /* .team-request-out {
-    margin-top: 40px;
-  }
-
-  .team-request-out h3 {
-    margin-bottom: 10px;
-    font-weight: bold;
-  } */
-
-  .featured-teams {
-    margin-top: 40px;
-  }
-
-  .featured-teams h3 {
-    margin-bottom: 10px;
-    font-weight: bold;
+  .unreadActivities {
+    margin-top: 0.3rem;
+    margin-bottom: 1rem;
   }
 
   .recent-activities {
-    margin-top: 40px;
+    margin-top: 1rem;
   }
 
   .recent-activities h3 {
-    margin-bottom: 10px;
     font-weight: bold;
   }
 
-  .recent-activities h3 span {
-    color: red;
-  }
-
   .activities-container {
-    background-color: #1a1919;
-    padding-left: 5px;
-    padding-right: 5px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    max-height: 300px;
-    border-bottom-right-radius: 10px;
-    border-bottom-left-radius: 10px;
+    background-color: inherit;
+    /* padding-left: 0.5rem; */
+    padding-right: 0.5rem;
+    padding-top: 0.5rem;
+    padding-bottom: 1rem;
+    max-height: 350px;
     display: flex;
     flex-direction: column;
     justify-content: start;
-    overflow-y: scroll;
+    overflow-y: auto;
   }
 
   .activity {
     display: flex;
     flex-direction: row;
     justify-content: start;
+    align-items: center;
     width: 100%;
-    border-radius: 20px;
-    height: 70px;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    padding-top: 10px;
-    padding-bottom: 10px;
+    border-radius: 15px;
+    min-height: 65px;
+    margin-top: 5px;
+    margin-bottom: 15px;
     cursor: pointer;
   }
 
   .read {
-    background-color: #e7e7e7;
+    background-color: var(--vscode-button-secondaryBackground);
   }
 
   .unread {
-    background-color: #fff;
-    border-top: 2px solid rgb(255, 140, 0);
+    background-color: var(--vscode-button-secondaryHoverBackground);
+    border-right: 2px solid var(--vscode-button-background);
   }
 
   .activity-icon {
@@ -418,34 +177,10 @@
     align-items: center;
   }
 
-  .icon-team {
-    padding: 6px;
-    background-color: rgba(255, 140, 0, 0.8);
-    color: #fff;
-    font-size: 1rem;
-    border-radius: 50%;
-  }
-
   .icon-flair {
-    padding: 6px;
-    background-color: rgb(14, 99, 156, 0.8);
-    color: #fff;
-    font-size: 1rem;
-    border-radius: 50%;
-  }
-
-  .icon-project {
-    padding: 6px;
-    background-color: rgba(14, 156, 14, 0.8);
-    color: #fff;
-    font-size: 1rem;
-    border-radius: 50%;
-  }
-
-  .icon-danger {
-    padding: 6px;
-    background-color: rgba(223, 29, 29, 0.8);
-    color: #fff;
+    padding: 0.55rem;
+    background-color: var(--vscode-button-background);
+    color: var(--vscode-button-foreground);
     font-size: 1rem;
     border-radius: 50%;
   }
@@ -453,35 +188,28 @@
   .activity-message {
     width: 70%;
     height: 100%;
-    /* background-color: blue; */
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: start;
-    padding-left: 3px;
+    padding-left: 5px;
   }
 
   .activity-message h3 {
-    font-size: 1rem;
-    color: #1a1919;
+    font-size: 0.9rem;
     font-weight: bold;
+    color: var(--vscode-button-secondaryForeground);
   }
 
   .activity-message p {
     margin-top: 5px;
-    color: rgb(26, 25, 25, 0.5);
-    font-size: 0.8rem;
-  }
-
-  .activity-message p span {
-    font-weight: bold;
-    font-style: italic;
+    font-size: 0.75rem;
+    color: var(--vscode-button-secondaryForeground);
   }
 
   .activity-date {
     width: 15%;
     height: 100%;
-    /* background-color: green; */
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -490,113 +218,6 @@
 
   .activity-date span {
     font-size: 0.6rem;
-    color: #1a1919;
-  }
-
-  .featuredTeams-container {
-    background-color: #1a1919;
-    padding-left: 5px;
-    padding-right: 5px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    max-height: 300px;
-    border-bottom-right-radius: 10px;
-    border-bottom-left-radius: 10px;
-    display: flex;
-    flex-direction: column;
-    justify-content: start;
-    overflow-y: scroll;
-  }
-
-  .featuredTeam {
-    background-color: #e7e7e7;
-    display: flex;
-    flex-direction: row;
-    justify-content: start;
-    width: 100%;
-    border-radius: 20px;
-    height: 50px;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    cursor: pointer;
-  }
-
-  .featuredTeam-icon {
-    width: 15%;
-    height: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .featuredTeam-message {
-    width: 70%;
-    height: 100%;
-    /* background-color: blue; */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: start;
-    padding-left: 3px;
-  }
-
-  .featuredTeam-message h2 {
-    font-size: 1rem;
-    color: #1a1919;
-    font-weight: bold;
-  }
-
-  .featuredTeam-message p {
-    margin-top: 5px;
-    color: rgba(26, 25, 25, 0.5);
-    font-size: 0.8rem;
-  }
-
-  .featuredTeam-message p span {
-    font-weight: bold;
-    font-style: italic;
-  }
-
-  .featuredTeam-leave {
-    width: 15%;
-    height: 100%;
-    /* background-color: green; */
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .featuredTeam-leave span {
-    font-size: 0.9rem;
-    color: #1a1919;
-  }
-
-  .featuredTeam-col {
-    width: 15%;
-    height: 100%;
-    /* background-color: green; */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .featuredTeam-col .accept {
-    font-size: 1.1rem;
-    color: green;
-  }
-
-  .featuredTeam-col .reject {
-    font-size: 1.1rem;
-    margin-top: 5px;
-    color: red;
-  }
-
-  .red {
-    color: red;
+    color: var(--vscode-button-secondaryForeground);
   }
 </style>

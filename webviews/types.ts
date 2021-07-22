@@ -7,6 +7,16 @@ export type Flair = {
   deleted_at: Date | null;
 };
 
+export type Activity = {
+  id: string;
+  user_id: string;
+  title: string;
+  description: string;
+  read_at: boolean;
+  created_at: Date;
+  updated_at: Date;
+};
+
 export type User = {
   id: string;
   githubId: string;
@@ -73,17 +83,4 @@ export type Project = {
   updated_at: Date;
   __user__: User;
   __team__: Team;
-};
-
-export type Activity = {
-  owner?: string;
-  id?: string;
-  title?: string;
-  message?: string;
-  read: boolean;
-  date: number;
-  flair?: string;
-  team?: string;
-  project?: string;
-  teamRequest?: TeamMember;
 };

@@ -59,7 +59,7 @@
   </div>
   <div class="inner">
     <div class="flairs-row">
-      {#each flairs as flair}
+      {#each flairs.reverse() as flair}
         <!-- Display Flairs -->
         <span class="flairItem">
           {flair.name}
@@ -158,6 +158,7 @@
     flex-direction: row;
     justify-content: center;
     align-items: center;
+    margin-top: 15px;
     width: 100%;
   }
 

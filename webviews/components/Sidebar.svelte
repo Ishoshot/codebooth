@@ -11,12 +11,16 @@
   import Radar from "svelte-chartjs/src/Radar.svelte";
   import HomeActions from "./HomeActions.svelte";
   import Login from "./Login.svelte";
+  import Notifications from "./Notifications.svelte";
 
-  // import Todos from "./Todos.svelte";
-
+  // Flair
   let flair: "";
   let flairs: FlairData[];
   let creatingFlair = false;
+  let showFlairsModule: boolean = false;
+
+  //Activity
+  let activities: Activity[];
 
   let team: { teamName: string; teamDesc: string };
   let creatingTeam = false;
@@ -29,15 +33,13 @@
   let user: User | null = null;
 
   let page: string | undefined = tsvscode.getState()?.page || "home";
-  let activities: Activity[] = tsvscode.getState()?.activities || [];
 
-  let showFlairsModule: boolean = false;
   let showTeamsModule: boolean = false;
   let showProjectsModule: boolean = false;
 
   // Persists the Value to state
   $: {
-    tsvscode.setState({ page, activities });
+    tsvscode.setState({ page });
   }
 
   // Chart
@@ -67,28 +69,30 @@
     }
   }
 
-  // Get User's profile
+  // Send Message to SideBarProvider to LogOut
+  function logOut() {
+    tsvscode.postMessage({ type: "logout", value: undefined });
+  }
+
+  // Get User's [Profile | Activities]
   async function getUserProfile() {
-    if (accessToken) {
-      const response = await fetch(`${apiBaseURL}/profile`, {
-        headers: {
-          "content-type": "application/json",
-          accept: "application/json",
-          authorization: `Bearer ${accessToken}`,
-        },
-      });
-      const data = await response.json();
-      console.log(data);
-      if (!data) {
-        user = null;
-        loading = false;
-        return;
-      }
-      user = data.user;
+    const response = await fetch(`${apiBaseURL}/profile`, {
+      headers: {
+        "content-type": "application/json",
+        accept: "application/json",
+        authorization: `Bearer ${accessToken}`,
+      },
+    });
+    const data = await response.json();
+    // console.log(data);
+    if (!data) {
+      user = null;
       loading = false;
-    } else {
-      loading = false;
+      return;
     }
+    user = data.user;
+    activities = data.user.activities;
+    loading = false;
   }
 
   // Toggle Flair Module Visibility
@@ -106,7 +110,7 @@
       },
     });
     const data = await response.json();
-    console.log(data);
+    // console.log(data);
     if (!data) {
       flairs = [];
       return;
@@ -129,7 +133,7 @@
       },
     });
     const data: any = await response.json();
-    // console.log(response);
+    // console.log(data);
     if (response.status == 400) {
       tsvscode.postMessage({
         type: "onError",
@@ -151,11 +155,8 @@
     // Append to Existing flairs
     flairs = [...flairs, data.flair];
     // Log Activity
-    const logData = {
-      title: "Flair Created",
-      flair,
-    };
-    // logActivity(logData);
+    activities.unshift(data.activity);
+    // Show Message
     tsvscode.postMessage({
       type: "onInfo",
       value: `Your flair: ${data.flair.name} was created successfully`,
@@ -177,7 +178,7 @@
       },
     });
     const data: any = await response.json();
-    console.log(data);
+    // console.log(data);
 
     if (response.status !== 200) {
       tsvscode.postMessage({
@@ -191,11 +192,8 @@
       // Remove from to Existing flairs
       flairs = flairs.filter((inFlair) => inFlair.id != data.flair.id);
       // Log Activity
-      const logData = {
-        title: "Flair Deleted",
-        flair,
-      };
-      // logActivity(logData);
+      activities.unshift(data.activity);
+      // Show Message
       tsvscode.postMessage({
         type: "onInfo",
         value: `Your flair: ${data.flair.name} was deleted successfully`,
@@ -211,9 +209,14 @@
         case "token":
           {
             accessToken = message.value;
-            await getUserProfile();
-            await getFlairs();
+            if (accessToken !== "") {
+              await getUserProfile();
+              await getFlairs();
+            } else {
+              loading = false;
+            }
           }
+
           break;
 
         case "logged-out":
@@ -230,8 +233,6 @@
           }
           break;
       }
-
-      // activities = [];
     });
 
     // Send Message to SideBarProvider to Load Welcome for UnAuth User
@@ -267,6 +268,8 @@
           <Radar data={dataRadar} {options} />
         </div>
 
+        <i class="fa fa-sign-out-alt fa-2x" on:click={() => logOut()} />
+
         <HomeActions on:showFlairs={() => showFlairs()} />
 
         {#if showFlairsModule}
@@ -279,7 +282,7 @@
       {:else if page === "profile"}
         <!--  -->
       {:else if page === "notifications"}
-        <!--  -->
+        <Notifications {activities} {accessToken} />
       {:else}
         <h1>Settings</h1>
       {/if}
