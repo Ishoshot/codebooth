@@ -43,11 +43,17 @@
   function renderActivityDate(val: any) {
     var date = new Date();
     var millis = date.valueOf() - new Date(val).valueOf();
+    var week = Math.floor(millis / (1000 * 60 * 60 * 24 * 7));
+    var day = Math.floor((millis / (1000 * 60 * 60 * 24)) % 7);
     var hour = Math.floor((millis / 3600 / 1000) % 24);
     var minute = Math.floor((millis / 60000) % 60);
     var seconds = ((millis % 60000) / 1000).toFixed(0);
 
-    if (hour >= 1 && hour <= 24) {
+    if (week > 0) {
+      return week + " week" + (week > 1 ? "s" : "");
+    } else if (day >= 1 && day <= 7) {
+      return day + " day" + (day > 1 ? "s" : "");
+    } else if (hour >= 1 && hour <= 24) {
       return hour + " hr" + " " + minute + " min";
     } else if (hour == 0 && minute >= 1) {
       return minute + " min";

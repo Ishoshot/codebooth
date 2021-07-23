@@ -134,6 +134,7 @@
 		"@types/node-fetch": "^2.5.8",
 		"node-fetch": "^2.6.1",
 		"polka": "^0.5.2",
-		"svelte-chartjs": "^1.0.1"
+		"svelte-chartjs": "^1.0.1",
+		"svelte-loading-skeleton": "^1.0.1"
 	}
 }

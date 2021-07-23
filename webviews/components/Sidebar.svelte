@@ -251,6 +251,8 @@
       value: undefined,
     });
   });
+
+  import { Skeleton } from "svelte-loading-skeleton";
 </script>
 
 <!-- MOCK UP -->
@@ -260,7 +262,14 @@
   <div class="main">
     {#if loading}
       <!-- Authenticated, But no User Data -->
-      <div>Loading ...</div>
+      <Skeleton
+        width="100%"
+        height="100%"
+        borderRadius="0px"
+        baseColor="transparent"
+        highlightColor="rgb(158,158,167,0.08)"
+        animationLength="1.3s"
+      />
     {:else if user !== null}
       <!-- Authenticated, User Data -->
       {#if page === "home"}
