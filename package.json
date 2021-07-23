@@ -1,7 +1,7 @@
 {
 	"name": "codebooth",
 	"displayName": "VS CodeBooth",
-	"description": "Visual Studio Code's Stack Overflow",
+	"description": "Your Full Stack Friend",
 	"version": "0.0.1",
 	"engines": {
 		"vscode": "^1.52.0"
@@ -39,7 +39,7 @@
 					"id": "codebooth-sidebar",
 					"name": "VSCode's Stack Overflow",
 					"icon": "media/icon.svg",
-					"contextualTitle": "CodeBooth - VSCode's StackOverflow"
+					"contextualTitle": "CodeBooth - Your Full Stack Friend"
 				}
 			]
 		},
