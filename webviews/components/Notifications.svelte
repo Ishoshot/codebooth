@@ -6,6 +6,9 @@
   // export let user: User;
   export let activities: Activity[];
 
+  let filteredActivities: Activity[] = activities;
+  let filterClass: string = "all";
+
   // Function to Mark Activity As Read
   async function markAsRead(id: string) {
     const response = await fetch(`${apiBaseURL}/user/activity/${id}`, {
@@ -17,7 +20,7 @@
       },
     });
     const data: any = await response.json();
-    console.log(data);
+    // console.log(data);
     if (response.status !== 200) {
       tsvscode.postMessage({
         type: "onError",
@@ -26,12 +29,14 @@
       return;
     }
 
-    // Update Activities
+    // Update Activities and Filters
     activities = activities.map((activity) =>
       activity.id === data.activity.id
         ? { ...activity, read_at: true }
         : activity
     );
+    filteredActivities = activities;
+    filterClass = "all";
 
     tsvscode.postMessage({
       type: "onInfo",
@@ -62,10 +67,24 @@
     }
   }
 
+  async function filterActivities(type: string) {
+    if (type == "all") {
+      filterClass = "all";
+      filteredActivities = activities.filter((a) => a.id != null);
+    } else if (type == "unread") {
+      filterClass = "unread";
+      filteredActivities = activities.filter((a) => a.read_at == false);
+    } else {
+      filterClass = "read";
+      filteredActivities = activities.filter((a) => a.read_at == true);
+    }
+  }
+
   import { createEventDispatcher } from "svelte";
   const dispatch = createEventDispatcher();
 
   onMount(async () => {
+    filteredActivities = activities;
     window.addEventListener("message", async (event) => {
       const message = event.data; // The json data that the extension sent
       switch (message.type) {
@@ -84,10 +103,38 @@
         You have {activities.filter((a) => a.read_at == false).length} / {activities.length}
         unread activities
       </p>
+
+      <!-- Filters -->
+      <div class="filters">
+        <p>
+          <i class="fa fa-filter" /> Filter:
+        </p>
+
+        <div class="filters-row">
+          <span
+            class={filterClass == "all" ? "active" : ""}
+            on:click={() => filterActivities("all")}
+          >
+            ALL
+          </span>
+          <span
+            class={filterClass == "read" ? "active" : ""}
+            on:click={() => filterActivities("read")}
+          >
+            READ
+          </span>
+          <span
+            class={filterClass == "unread" ? "active" : ""}
+            on:click={() => filterActivities("unread")}
+          >
+            UNREAD
+          </span>
+        </div>
+      </div>
     {/if}
 
     <div class="activities-container">
-      {#each activities as activity, id}
+      {#each filteredActivities as activity, id}
         <div
           class={activity.read_at ? "activity read" : "activity unread"}
           on:click={() => {
@@ -97,7 +144,9 @@
           }}
         >
           <div class="activity-icon">
-            <i class="icon-flair fa fa-code" />
+            {#if activity.entity == "Flair"}
+              <i class="fa fa-heart" id={activity.action} />
+            {/if}
           </div>
 
           <div class="activity-message">
@@ -127,7 +176,7 @@
   }
 
   .unreadActivities {
-    margin-top: 0.3rem;
+    margin-top: 0.6rem;
     margin-bottom: 1rem;
   }
 
@@ -183,10 +232,26 @@
     align-items: center;
   }
 
-  .icon-flair {
+  /* .icon-flair {
     padding: 0.55rem;
     background-color: var(--vscode-button-background);
     color: var(--vscode-button-foreground);
+    font-size: 1rem;
+    border-radius: 50%;
+  } */
+
+  #Delete {
+    padding: 0.55rem;
+    background-color: #dd2d27;
+    color: #fff;
+    font-size: 1rem;
+    border-radius: 50%;
+  }
+
+  #Create {
+    padding: 0.55rem;
+    background-color: #0eb90e;
+    color: #fff;
     font-size: 1rem;
     border-radius: 50%;
   }
@@ -225,5 +290,27 @@
   .activity-date span {
     font-size: 0.6rem;
     color: var(--vscode-button-secondaryForeground);
+  }
+
+  .filters {
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    align-items: center;
+  }
+
+  .filters-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .filters-row span {
+    margin-left: 20px;
+  }
+
+  .active {
+    font-weight: bold;
   }
 </style>

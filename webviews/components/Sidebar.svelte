@@ -155,7 +155,7 @@
     // Append to Existing flairs
     flairs = [...flairs, data.flair];
     // Log Activity
-    activities.unshift(data.activity);
+    activities = [data.activity, ...activities];
     // Show Message
     tsvscode.postMessage({
       type: "onInfo",
@@ -192,7 +192,7 @@
       // Remove from to Existing flairs
       flairs = flairs.filter((inFlair) => inFlair.id != data.flair.id);
       // Log Activity
-      activities.unshift(data.activity);
+      activities = [data.activity, ...activities];
       // Show Message
       tsvscode.postMessage({
         type: "onInfo",
@@ -322,15 +322,23 @@
       <i class="fa fa-user-circle" />
     </span>
 
-    {#if user}
+    {#if user !== null}
       <span
+        style="position:relative;"
         class={page == "notifications" ? "active" : ""}
         on:click={() => setPage("notifications")}
       >
         <i class="fa fa-bell" />
+        <!-- if you have any notifications from activities, display the count -->
+        {#if activities.filter((a) => a.read_at == false).length > 0}
+          <div class="count">
+            {activities.filter((a) => a.read_at == false).length}
+          </div>
+        {/if}
       </span>
     {:else}
       <span
+        style="position:relative;"
         class={page == "notifications" ? "active" : ""}
         on:click={() => setPage("notifications")}
       >

@@ -70,3 +70,17 @@ body {
   transform: scale(1.15);
   font-weight: bold;
 }
+
+.count {
+  background-color: red;
+  font-size: xx-small;
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: -3px;
+  right: -3px;
+  border-radius: 25px;
+}

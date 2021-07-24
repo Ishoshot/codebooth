@@ -11,6 +11,8 @@ export type Activity = {
   id: string;
   user_id: string;
   title: string;
+  action: string;
+  entity: string;
   description: string;
   read_at: boolean;
   created_at: Date;
