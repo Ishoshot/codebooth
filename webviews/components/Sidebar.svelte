@@ -11,6 +11,7 @@
   import Radar from "svelte-chartjs/src/Radar.svelte";
   import HomeActions from "./HomeActions.svelte";
   import Login from "./Login.svelte";
+  import Profile from "./Profile.svelte";
   import Notifications from "./Notifications.svelte";
 
   // Flair
@@ -277,8 +278,6 @@
           <Radar data={dataRadar} {options} />
         </div>
 
-        <i class="fa fa-sign-out-alt fa-2x" on:click={() => logOut()} />
-
         <HomeActions on:showFlairs={() => showFlairs()} />
 
         {#if showFlairsModule}
@@ -289,7 +288,7 @@
           />
         {/if}
       {:else if page === "profile"}
-        <!--  -->
+        <Profile {user} />
       {:else if page === "notifications"}
         <Notifications {activities} {accessToken} />
       {:else}

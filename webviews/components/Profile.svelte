@@ -33,9 +33,10 @@
     <div class="image">
       <img src={user.image} alt="avatar" />
     </div>
+
     <p class="name">
       {user.name}
-      {#if user.verified}
+      {#if user.is_verified}
         <!-- Verified Icon -->
         <svg width="17px" height="17px" viewBox="0 0 17 17" class="VerifiedIcon"
           ><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"
@@ -63,22 +64,30 @@
         >
       {/if}
     </p>
-    <p class="bio">{user.bio}</p>
+
+    <p class="bio">{user.description}</p>
 
     <div class="flairs-row">
-      {#each user.__flairs__ as flair}
+      {#each user.flairs.reverse() as flair}
         <!-- Display Flairs -->
         <span class="flairItem">{flair.name}</span>
       {:else}
         <!-- Flair's Empty -->
-        <h4>Oops 😔 ! No Flair found...</h4>
+        <h4>Oops 😔 ! this.user.flairs.isEmpty(); //true</h4>
       {/each}
     </div>
 
     <div class="first-row">
-      <p class="uniqueId">#{user.githubId}</p>
-      <i class="fa fa-share-alt fa-2x" />
-      <i class="fa fa-sign-out-alt fa-2x" on:click={() => logOut()} />
+      <p class="uniqueId">#{user.github_id}</p>
+      <i
+        style="margin-right: 1.5rem; cursor:pointer;"
+        class="fa fa-share-alt fa-2x"
+      />
+      <i
+        style="margin-right: 1.5rem; color:#dd2d27; cursor:pointer;"
+        class="fa fa-sign-out-alt fa-2x"
+        on:click={() => logOut()}
+      />
     </div>
   </div>
 
@@ -86,17 +95,21 @@
     <div class="primary-container">
       <h3>PRIMARY INFO</h3>
       <div class="primary">
-        <p>Name: {user.name}</p>
-        <p>Email: {user.email}</p>
+        <p><i class="fa fa-user" /> Name: {user.name}</p>
+        <p><i class="fa fa-envelope" /> Email: {user.email}</p>
       </div>
     </div>
 
     <div class="secondary-container">
       <h3>SECONDARY INFO</h3>
       <div class="secondary">
-        <p>Company: {user.company ? user.company : ""}</p>
-        <p>Location: {user.location}</p>
-        <p>Joined: {renderDate(user.created_at)}</p>
+        <p>
+          <i class="fa fa-home" /> Work: {user.company ? user.company : ""}
+        </p>
+        <p><i class="fa fa-map-marker" /> Location: {user.location}</p>
+        <p>
+          <i class="fa fa-calendar" /> Joined: {renderDate(user.created_at)}
+        </p>
       </div>
     </div>
 
@@ -125,12 +138,12 @@
     flex-direction: column;
     justify-content: start;
     align-items: center;
-    margin-top: 10%;
+    margin-top: 2rem;
   }
 
   .image {
     display: inline-block;
-    padding: 0.6rem;
+    padding: 0.5rem;
     background: linear-gradient(150deg, #0e639c, #ff8c00);
     margin: auto;
     border-radius: 50%;
@@ -149,7 +162,6 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    color: #fff;
     margin-top: 1.5rem;
     font-size: 1.5rem;
   }
@@ -161,6 +173,7 @@
   }
 
   .bio {
+    margin-top: 0.6rem;
     padding: 10px;
     text-align: center;
   }
@@ -168,21 +181,21 @@
   .flairs-row {
     display: flex;
     flex-direction: row;
-    justify-content: center;
     flex-wrap: wrap;
+    justify-content: center;
     align-items: center;
+    overflow-x: scroll;
   }
 
   .flairItem {
-    background-color: #ececec;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    padding-left: 12px;
-    padding-right: 12px;
-    color: #111;
-    margin-right: 10px;
-    border-radius: 20px;
-    margin-top: 5%;
+    background-color: var(--vscode-button-secondaryBackground);
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    padding-left: 1.1rem;
+    padding-right: 1.1rem;
+    margin-right: 0.6rem;
+    border-radius: 1rem;
+    margin-top: 0.6rem;
     cursor: pointer;
   }
 
@@ -202,21 +215,21 @@
   }
 
   .first-row {
-    width: 70%;
-    margin-top: 5%;
+    margin-top: 0.5rem;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: space-around;
+    justify-content: start;
   }
 
   .uniqueId {
-    padding: 1rem;
-    background-color: #313131;
-    color: #fff;
+    padding: 0.85rem;
+    background-color: var(--vscode-button-background);
+    color: var(--vscode-button-foreground);
     border-radius: 15px;
     cursor: pointer;
+    margin-right: 1.5rem;
   }
 
   .second {
@@ -233,21 +246,21 @@
   }
 
   .primary-container > h3 {
-    color: #fff;
+    font-weight: bold;
     font-family: "Courier New", Courier, monospace;
   }
 
   .primary {
-    background-color: #ececec;
+    background-color: var(--vscode-button-background);
     padding: 1rem;
     margin-top: 5px;
     margin-bottom: 5px;
     border-radius: 1rem;
-    color: #1d1d1d;
+    color: var(--vscode-button-foreground);
   }
 
   .primary > p {
-    border-bottom: 1px solid #d1d1d1;
+    border-bottom: 1px solid var(--vscode-foreground);
     padding-top: 1rem;
     padding-bottom: 1rem;
   }
@@ -258,21 +271,21 @@
   }
 
   .secondary-container > h3 {
-    color: #fff;
+    font-weight: bold;
     font-family: "Courier New", Courier, monospace;
   }
 
   .secondary {
-    background-color: #ececec;
+    background-color: var(--vscode-button-background);
     padding: 1rem;
     margin-top: 5px;
     margin-bottom: 5px;
     border-radius: 1rem;
-    color: #1d1d1d;
+    color: var(--vscode-button-foreground);
   }
 
   .secondary > p {
-    border-bottom: 1px solid #d1d1d1;
+    border-bottom: 1px solid var(--vscode-foreground);
     padding-top: 1rem;
     padding-bottom: 1rem;
   }
@@ -280,25 +293,25 @@
   .social-container {
     width: 90vw;
     margin-top: 2rem;
-    margin-bottom: 20%;
+    margin-bottom: 2rem;
   }
 
   .social-container > h3 {
-    color: #fff;
+    font-weight: bold;
     font-family: "Courier New", Courier, monospace;
   }
 
   .social {
-    background-color: #ececec;
+    background-color: var(--vscode-button-background);
     padding: 1rem;
     margin-top: 5px;
     margin-bottom: 5px;
     border-radius: 1rem;
-    color: #1d1d1d;
+    color: var(--vscode-button-foreground);
   }
 
   .social > p {
-    border-bottom: 1px solid #d1d1d1;
+    border-bottom: 1px solid var(--vscode-foreground);
     padding-top: 1rem;
     padding-bottom: 1rem;
   }

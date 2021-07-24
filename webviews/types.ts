@@ -21,18 +21,18 @@ export type Activity = {
 
 export type User = {
   id: string;
-  githubId: string;
+  github_id: string;
   name: string;
   email: string;
   image: string;
   github_url: string;
   location: string;
   company: string;
-  bio: string;
+  description: string;
   created_at: Date;
   updated_at: Date;
-  verified: boolean;
-  __flairs__: Array<Flair>;
+  is_verified: boolean;
+  flairs: Array<Flair>;
   __teams__: Array<Team>;
   __stars__: Array<Star>;
   __teamsIn__: Array<TeamMember>;

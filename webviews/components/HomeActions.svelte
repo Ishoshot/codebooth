@@ -110,24 +110,32 @@
   }
 
   .btnStyle-Two {
-    background-color: #ececec;
-    color: #1186d4;
+    /* background-color: #ececec; */
+    /* color: #1186d4; */
+    color: var(--vscode-button-background);
+    background-color: var(--vscode-button-foreground);
     transition: 0.5s all;
   }
 
   .btnStyle-Two:hover {
-    background-color: #0e639c;
-    color: #ececec;
+    /* background-color: #0e639c; */
+    /* color: #ececec; */
+    background-color: var(--vscode-button-background);
+    color: var(--vscode-button-foreground);
   }
 
   .btnStyle-Four {
-    background-color: #0e639c;
+    /* background-color: #0e639c; */
     transition: 0.5s all;
+    background-color: var(--vscode-button-background);
+    color: var(--vscode-button-foreground);
   }
 
   .btnStyle-Four:hover {
-    background-color: #ececec;
-    color: #0e639c;
+    /* background-color: #ececec; */
+    /* color: #0e639c; */
+    color: var(--vscode-button-background);
+    background-color: var(--vscode-button-foreground);
   }
 
   .action-btn button {

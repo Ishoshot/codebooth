@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { createEventDispatcher } from "svelte";
-  import type { Flair, User } from "../../types";
+  import type { Flair } from "../../types";
 
   export let flairs: Flair[];
   export let creatingFlair: boolean;

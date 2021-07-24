@@ -37,7 +37,7 @@
 				{
 					"type": "webview",
 					"id": "codebooth-sidebar",
-					"name": "CodeBooth - Your Full Stack Friend",
+					"name": "Your Full Stack Friend",
 					"icon": "media/icon.svg",
 					"contextualTitle": "CodeBooth - Your Full Stack Friend"
 				}

@@ -17,7 +17,7 @@ body {
 }
 
 .chart {
-  background-color: #ececec;
+  background-color: var(--vscode-button-foreground);
   padding-left: 10px;
   padding-right: 10px;
   height: 350px;
@@ -26,7 +26,7 @@ body {
 }
 
 .active {
-  color: #0e639c;
+  color: var(--vscode-button-background);
 }
 
 .sticky-foot i {

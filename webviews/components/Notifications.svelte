@@ -302,12 +302,14 @@
   .filters-row {
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
   }
 
   .filters-row span {
     margin-left: 20px;
+    cursor: pointer;
   }
 
   .active {
