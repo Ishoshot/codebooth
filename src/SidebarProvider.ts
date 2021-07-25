@@ -50,7 +50,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
           break;
         }
 
-        /* --------------------------------- Logout --------------------------------- */
+        /* --------------------------------- Logout [Server] --------------------------------- */
         case "logout": {
           const logOut = await vscode.window.showInformationMessage(
             "Are you sure you want to logout?",
@@ -64,16 +64,12 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
                 vscode.window.showInformationMessage(
                   "Please Wait while we log you out..."
                 );
-                /* ---------------------------- Unset accessToken --------------------------- */
-                TokenManager.setToken("");
-                vscode.window.showInformationMessage(
-                  "LogOut Attempt Successful..."
-                );
                 /* ------- Send Message to Svelte to Clear User state and accessToken ------- */
                 webviewView.webview.postMessage({
                   type: "logged-out",
                   value: undefined,
                 });
+
                 break;
               case "No":
                 vscode.window.showInformationMessage(
@@ -91,15 +87,23 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
           break;
         }
 
-        /* ---------------------------- Show Users Page --------------------------- */
-        case "show-users": {
-          await vscode.commands.executeCommand("codebooth.Users");
+        // -------------------------- Logout [Client] ---------------------------------
+        case "clearToken": {
+          /* ---------------------------- Unset accessToken --------------------------- */
+          TokenManager.setToken("");
+          vscode.window.showInformationMessage("LogOut Attempt Successful...");
           break;
         }
 
         /* ---------------------------- Create Flair --------------------------- */
         case "create-flair": {
           await vscode.commands.executeCommand("codebooth.createFlair");
+          break;
+        }
+
+        /* ---------------------------- Show Users Page --------------------------- */
+        case "show-users": {
+          await vscode.commands.executeCommand("codebooth.Users");
           break;
         }
 
@@ -110,7 +114,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
         }
 
         /* ---------------------------- Manage Teams --------------------------- */
-        case "manage-teams": {
+        case "show-teams": {
           await vscode.commands.executeCommand("codebooth.manageTeams");
           break;
         }

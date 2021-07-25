@@ -11,10 +11,11 @@ import { ProjectPanel } from "./ProjectPanel";
 
 export function activate(context: vscode.ExtensionContext) {
   TokenManager.globalState = context.globalState;
+  TokenManager.setToken("");
   console.log("Token Value is: " + TokenManager.getToken());
+  const sidebarProvider = new SidebarProvider(context.extensionUri);
 
   /* --------------------------------- SideBar Starts-------------------------------- */
-  const sidebarProvider = new SidebarProvider(context.extensionUri);
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider(
       "codebooth-sidebar",
@@ -30,14 +31,6 @@ export function activate(context: vscode.ExtensionContext) {
     })
   );
   /* ------------------------------ Welcome Panel Ends----------------------------- */
-
-  /* ------------------------------ Users Panel Starts----------------------------- */
-  context.subscriptions.push(
-    vscode.commands.registerCommand("codebooth.Users", () => {
-      UserPanel.createOrShow(context.extensionUri);
-    })
-  );
-  /* ------------------------------ User Panel Ends----------------------------- */
 
   /* ------------------------------ Create Flair Starts----------------------------- */
   context.subscriptions.push(
@@ -69,6 +62,14 @@ export function activate(context: vscode.ExtensionContext) {
     })
   );
   /* ------------------------------ Create Flair Ends----------------------------- */
+
+  /* ------------------------------ Users Panel Starts----------------------------- */
+  context.subscriptions.push(
+    vscode.commands.registerCommand("codebooth.Users", () => {
+      UserPanel.createOrShow(context.extensionUri);
+    })
+  );
+  /* ------------------------------ User Panel Ends----------------------------- */
 
   /* ------------------------------ Create Team Starts----------------------------- */
   context.subscriptions.push(

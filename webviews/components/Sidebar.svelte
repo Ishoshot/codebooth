@@ -75,6 +75,28 @@
     tsvscode.postMessage({ type: "logout", value: undefined });
   }
 
+  // Clear Token on Server
+  async function clearTokenOnServer() {
+    const response = await fetch(`${apiBaseURL}/auth/logout`, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        accept: "application/json",
+        authorization: `Bearer ${accessToken}`,
+      },
+    });
+    const data: any = await response.json();
+    console.log(data);
+    if (response.status == 200) {
+      tsvscode.postMessage({
+        type: "clearToken",
+        value: undefined,
+      });
+      accessToken = "";
+      user = null;
+    }
+  }
+
   // Get User's [Profile | Activities]
   async function getUserProfile() {
     const response = await fetch(`${apiBaseURL}/profile`, {
@@ -222,8 +244,7 @@
 
         case "logged-out":
           {
-            accessToken = "";
-            user = null;
+            await clearTokenOnServer();
           }
           break;
 
@@ -264,8 +285,8 @@
     {#if loading}
       <!-- Authenticated, But no User Data -->
       <Skeleton
-        width="100%"
-        height="100%"
+        width="100vw"
+        height="600px"
         borderRadius="0px"
         baseColor="transparent"
         highlightColor="rgb(158,158,167,0.08)"
@@ -288,7 +309,7 @@
           />
         {/if}
       {:else if page === "profile"}
-        <Profile {user} />
+        <Profile {user} on:logout={() => logOut()} />
       {:else if page === "notifications"}
         <Notifications {activities} {accessToken} />
       {:else}

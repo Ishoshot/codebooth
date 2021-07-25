@@ -21,14 +21,14 @@
   }
 
   /* ------------------------------ show Manage Teams ------------------------------ */
-  function manageTeams() {
+  function showTeams() {
     tsvscode.postMessage({
-      type: "manage-teams",
+      type: "show-teams",
       value: undefined,
     });
   }
 
-  /* ------------------------------ Toggle Module ------------------------------ */
+  /* ------------------------------ Dispatch Toggle Module Event to SideBar.svelte ------------------------------ */
   function toggleModule(module: string) {
     const type = "show" + module;
     dispatch(type);
@@ -50,7 +50,7 @@
     >
     <button class="btnStyle-Two">explore Codes <i class="fa fa-code" /></button>
 
-    <button class="btnStyle-Two" on:click={() => manageTeams()}
+    <button class="btnStyle-Two" on:click={() => showTeams()}
       >explore Teams <i class="fa fa-user-friends" /></button
     >
 

@@ -24,7 +24,6 @@
         authorization: `Bearer ${accessToken}`,
       },
     });
-
     const payload = await response.json();
     users = payload.users;
     filteredUsers = payload.users;
@@ -65,7 +64,7 @@
     window.addEventListener("message", async (event) => {
       const message = event.data; // The json data that the extension sent
       switch (message.type) {
-        /* --------------------- Accept Token and Call all Users -------------------- */
+        /* --------------------- Accept Token and getUsers() -------------------- */
         case "token":
           accessToken = message.value;
           getUsers();
