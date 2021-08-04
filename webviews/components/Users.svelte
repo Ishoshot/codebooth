@@ -3,15 +3,12 @@
   import type { User } from "../types";
   import LoadingData from "./shared/LoadingData.svelte";
   import NoDataFound from "./shared/NoDataFound.svelte";
-  import UserPeek from "./sub/UserPeek.svelte";
 
   let accessToken = "";
   let loading = true;
   let searchItem = "";
   let users: Array<User> = [];
   let filteredUsers: Array<User> = [];
-  let singleUser: User;
-  let showSingleUser: boolean = false;
   let showDetails: boolean = false;
   let showDetailsUser: string;
 
@@ -25,6 +22,7 @@
       },
     });
     const payload = await response.json();
+    console.log(payload);
     users = payload.users;
     filteredUsers = payload.users;
     loading = false;
@@ -39,19 +37,10 @@
 
   /* --------------------------- Set the User for Sneak Peek -------------------------- */
   async function setSingleUser(user: User) {
-    showSingleUser = true;
-    const response = await fetch(`${apiBaseURL}/user/details`, {
-      method: "POST",
-      body: JSON.stringify({
-        user_id: user.id,
-      }),
-      headers: {
-        "content-type": "application/json",
-        authorization: `Bearer ${accessToken}`,
-      },
+    tsvscode.postMessage({
+      type: "show-singleUser",
+      value: user.id + "/" + user.name,
     });
-    const payload = await response.json();
-    singleUser = payload.user;
   }
 
   /* ---------------------- Show More Details for a User ---------------------- */
@@ -65,10 +54,11 @@
       const message = event.data; // The json data that the extension sent
       switch (message.type) {
         /* --------------------- Accept Token and getUsers() -------------------- */
-        case "token":
+        case "token": {
           accessToken = message.value;
           getUsers();
           break;
+        }
       }
     });
 
@@ -87,7 +77,7 @@
       <form class="form">
         <input
           type="search"
-          placeholder="Search For User"
+          placeholder="Search for User"
           bind:value={searchItem}
           on:keyup={() => {
             filterUsers();
@@ -95,7 +85,7 @@
         />
       </form>
       <div class="layout">
-        <i class="fa fa-th" />
+        <i class="fa fa-th active" />
         <i class="fa fa-list" />
       </div>
     </div>
@@ -104,8 +94,8 @@
     <div class="info">
       <i class="fa fa-info" />
       <span>
-        You can click on the Caret on the User to Expand (mini), or/and
-        Double-Click on a user to Expand (maxi).
+        You can click on the caret on each User to Expand (mini), or/and click
+        on view profile to Expand (maxi).
       </span>
     </div>
 
@@ -122,25 +112,20 @@
           <div class="users-row">
             <!-- Display Users -->
             {#each filteredUsers as user}
-              <div
-                class="user-box"
-                on:dblclick={() => {
-                  setSingleUser(user);
-                }}
-              >
+              <div class="user-box">
                 <div class="user-box-first-row">
                   <div class="col">
                     <div class="user-each">
                       <img src={user.image} alt="avatar" />
                     </div>
                     <span class="fa fa-star">
-                      {user.__stars__.length}
+                      <!-- {user.__stars__.length} -->
                     </span>
                   </div>
 
                   <p class="name">
                     {user.name.slice(0, 24)}
-                    {#if user.verified}
+                    {#if user.is_verified}
                       <!-- Verified Icon -->
                       <svg
                         width="17px"
@@ -185,7 +170,17 @@
                 <div class="user-box-second-row">
                   <div class="col">
                     <span class="email">{user.email}</span>
-                    <span class="githubId">{user.githubId} </span>
+                    <div style="display:flex;">
+                      <span class="githubId">{user.github_id} </span>
+                      <span
+                        class="view-profile"
+                        style="margin-left:10px"
+                        on:click={() => {
+                          setSingleUser(user);
+                        }}
+                        >view profile
+                      </span>
+                    </div>
                   </div>
 
                   <div class="see">
@@ -201,7 +196,7 @@
 
                   {#if showDetails && showDetailsUser == user.id}
                     <div class="extra-details">
-                      <p><i class="fa fa-address-card" /> {user.bio}</p>
+                      <p><i class="fa fa-address-card" /> {user.description}</p>
                       <p>
                         <i class="fa fa-building" />
                         {user.company ? user.company : ""}
@@ -224,345 +219,8 @@
       {/if}
     {/if}
     <!--  -->
-    <!-- Show Single User Sneak Peek -->
-    {#if showSingleUser}
-      <div class="singleUser-container">
-        <i
-          class="fa fa-window-close close"
-          on:click={() => {
-            showSingleUser = false;
-          }}
-        />
-        <div class="single-user">
-          {#if singleUser}
-            <UserPeek user={singleUser} {accessToken} />
-          {:else}
-            <div class="single-user-loading">
-              <div>
-                <i class="fa fa-spinner fa-spin" />
-              </div>
-            </div>
-          {/if}
-        </div>
-      </div>
-    {/if}
   </div>
 </div>
 
 <style scoped>
-  #page-wrapper {
-    position: relative;
-    overflow-x: hidden;
-  }
-
-  .container {
-    width: 100%;
-    margin: 0 auto;
-  }
-
-  .info {
-    text-align: center;
-    padding-bottom: 20px;
-  }
-
-  .info i {
-    margin-right: 5px;
-    background-color: #0e639c;
-    color: #fff;
-    padding: 10px;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-  }
-
-  /* User List Section */
-
-  .users-container {
-    overflow-y: scroll;
-    height: 100vh;
-    padding-top: 30px;
-    padding-bottom: 30%;
-    padding-left: 0px;
-    padding-right: 0px;
-  }
-
-  .users-row {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: start;
-    align-items: flex-start;
-  }
-
-  .user-box {
-    margin-top: 1.5rem;
-    margin-bottom: 1.5rem;
-    margin-left: 0.5rem;
-    margin-right: 0.5rem;
-    width: 20rem;
-    background-color: #1a1919;
-    border: 1px solid #252525;
-    border-top-right-radius: 10px;
-    border-top-left-radius: 40px;
-    border-bottom-right-radius: 10px;
-    border-bottom-left-radius: 10px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding-top: 15px;
-    padding-left: 0px;
-    padding-right: 0px;
-    padding-bottom: 15px;
-    cursor: pointer;
-    transition: 0.5s all;
-    transition-timing-function: ease-in-out;
-    transition-property: "transform";
-  }
-
-  .user-box:hover {
-    transform: scale(1.05);
-  }
-
-  .user-box-first-row {
-    padding-left: 15px;
-    padding-right: 15px;
-    padding-top: 7px;
-    padding-bottom: 7px;
-    display: flex;
-    width: inherit;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .user-each {
-    display: inline-block;
-    padding: 2px;
-    background: linear-gradient(150deg, #0e639c, #ff8c00);
-    border-radius: 50%;
-    background-size: 60% 60%;
-    animation: animated-gradient 2.5s linear infinite;
-  }
-
-  .user-each img {
-    width: 30px;
-    display: block;
-    height: 30px;
-    border-radius: 50%;
-  }
-
-  .name {
-    color: #fff;
-  }
-
-  .name svg {
-    margin-left: 1px;
-    width: 12px;
-    height: 12px;
-  }
-
-  @keyframes animated-gradient {
-    25% {
-      background-position: left bottom;
-    }
-    50% {
-      background-position: right bottom;
-    }
-    75% {
-      background-position: right top;
-    }
-    100% {
-      background-position: left top;
-    }
-  }
-
-  .hr {
-    width: 100%;
-    border: 1px solid #252525;
-  }
-
-  .user-box-second-row {
-    padding-left: 15px;
-    padding-right: 15px;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    display: flex;
-    width: inherit;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: flex-end;
-  }
-
-  .user-box-second-row .col {
-    display: flex;
-    flex-direction: column;
-    align-items: start;
-    justify-content: space-around;
-  }
-
-  .user-box-second-row .col .email {
-    font-size: 0.8rem;
-    color: #fff;
-  }
-
-  .user-box-second-row .col .githubId {
-    font-size: 0.8rem;
-    margin-top: 6px;
-    background-color: #ff8c00f5;
-    padding-left: 7px;
-    padding-right: 7px;
-    padding-top: 3px;
-    padding-bottom: 3px;
-    color: #ffffff;
-    border-radius: 15px;
-  }
-
-  .user-box-second-row .see i {
-    font-size: 1.5rem;
-  }
-  /* User List Section Ends  */
-
-  /* Search Section  */
-
-  .search {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-around;
-    position: sticky;
-    padding-top: 50px;
-    padding-left: 10px;
-    padding-right: 10px;
-    padding-bottom: 20px;
-    width: 90%;
-    margin: auto;
-  }
-
-  .form {
-    width: 80%;
-    height: 50px;
-  }
-
-  input[type="search"] {
-    padding-top: 1rem;
-    padding-left: 2rem;
-    padding-right: 1rem;
-    padding-bottom: 1rem;
-    height: 100%;
-    width: 100%;
-    border-top-right-radius: 25px;
-    border-top-left-radius: 25px;
-    border-bottom-right-radius: 25px;
-    border-bottom-left-radius: 25px;
-    background-color: #151616;
-    color: #fff;
-  }
-
-  input[type="search"]:focus,
-  input[type="search"]:active {
-    outline: none !important;
-    border: none !important;
-  }
-
-  .layout {
-    margin-top: 10px;
-    height: 50px;
-    width: 10%;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-around;
-    align-items: center;
-  }
-
-  .layout i {
-    font-size: 20px;
-    cursor: pointer;
-  }
-
-  /* Search Section Ends  */
-
-  /* Extra Details Section */
-  .extra-details {
-    margin-top: 15px;
-    width: 100%;
-    background-color: #cccccc;
-    border-radius: 10px;
-    padding-left: 7px;
-    padding-right: 7px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    color: #151616;
-  }
-
-  .extra-details p {
-    font-size: 0.8rem;
-    margin-top: 3px;
-    margin-bottom: 3px;
-  }
-  /* Extra Details Section Ends*/
-
-  /* Single User */
-
-  .singleUser-container {
-    position: absolute;
-    width: 100%;
-    top: 7%;
-    z-index: 10;
-    background-color: transparent;
-    display: flex;
-    justify-content: center;
-  }
-
-  .single-user {
-    background-color: #151616;
-    overflow-y: scroll;
-    height: 80vh;
-    width: 400px;
-    padding-bottom: 50px;
-  }
-
-  .close {
-    font-size: 1.3rem;
-    color: #fff;
-    cursor: pointer;
-  }
-  /* Single User Ends */
-
-  /* Others */
-  .single-user-loading {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-  }
-
-  .single-user-loading i {
-    font-size: 3rem;
-  }
-
-  .fa-star {
-    margin-top: 6px;
-  }
-
-  .col {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-around;
-  }
-
-  .center {
-    display: flex;
-    flex-direction: column;
-    height: 500px;
-    width: 100%;
-    justify-content: center;
-    align-items: center;
-  }
 </style>

@@ -12,6 +12,7 @@
 	"activationEvents": [
 		"onCommand:codebooth.Welcome",
 		"onCommand:codebooth.Users",
+		"onCommand:codebooth.SingleUser",
 		"onCommand:codebooth.createFlair",
 		"onCommand:codebooth.createTeam",
 		"onCommand:codebooth.manageTeams",
@@ -53,6 +54,11 @@
 				"category": "VS CodeBooth",
 				"command": "codebooth.Users",
 				"title": "CodeBooth Users"
+			},
+			{
+				"category": "VS CodeBooth",
+				"command": "codebooth.SingleUser",
+				"title": "CodeBooth User"
 			},
 			{
 				"category": "VS CodeBooth",

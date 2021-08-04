@@ -8,10 +8,12 @@ import { TeamPanel } from "./TeamPanel";
 import { apiBaseURL } from "./constants";
 import fetch from "node-fetch";
 import { ProjectPanel } from "./ProjectPanel";
+import { SingleUserPanel } from "./SingleUserPanel";
+import { BoothState } from "./BoothState";
 
 export function activate(context: vscode.ExtensionContext) {
   TokenManager.globalState = context.globalState;
-  TokenManager.setToken("");
+  BoothState.globalState = context.globalState;
   console.log("Token Value is: " + TokenManager.getToken());
   const sidebarProvider = new SidebarProvider(context.extensionUri);
 
@@ -66,10 +68,20 @@ export function activate(context: vscode.ExtensionContext) {
   /* ------------------------------ Users Panel Starts----------------------------- */
   context.subscriptions.push(
     vscode.commands.registerCommand("codebooth.Users", () => {
+      UserPanel.kill();
       UserPanel.createOrShow(context.extensionUri);
     })
   );
   /* ------------------------------ User Panel Ends----------------------------- */
+
+  /* ------------------------------ SingleUser Panel Starts----------------------------- */
+  context.subscriptions.push(
+    vscode.commands.registerCommand("codebooth.SingleUser", () => {
+      SingleUserPanel.kill();
+      SingleUserPanel.createOrShow(context.extensionUri);
+    })
+  );
+  /* ------------------------------ SingleUser Panel Ends----------------------------- */
 
   /* ------------------------------ Create Team Starts----------------------------- */
   context.subscriptions.push(
@@ -255,6 +267,7 @@ export function activate(context: vscode.ExtensionContext) {
     })
   );
   /* ------------------------------ Projects Panel Ends----------------------------- */
+
   const item = vscode.window.createStatusBarItem(
     vscode.StatusBarAlignment.Right
   );

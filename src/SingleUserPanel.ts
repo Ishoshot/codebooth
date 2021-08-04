@@ -4,13 +4,13 @@ import { apiBaseURL } from "./constants";
 import { getNonce } from "./getNonce";
 import { TokenManager } from "./TokenManager";
 
-export class UserPanel {
+export class SingleUserPanel {
   /**
    * Track the currently panel. Only allow a single panel to exist at a time.
    */
-  public static currentPanel: UserPanel | undefined;
+  public static currentPanel: SingleUserPanel | undefined;
 
-  public static readonly viewType = "users";
+  public static readonly viewType = "single user";
 
   private readonly _panel: vscode.WebviewPanel;
   private readonly _extensionUri: vscode.Uri;
@@ -22,16 +22,16 @@ export class UserPanel {
       : undefined;
 
     // If we already have a panel, show it.
-    if (UserPanel.currentPanel) {
-      UserPanel.currentPanel._panel.reveal(column);
-      UserPanel.currentPanel._update();
+    if (SingleUserPanel.currentPanel) {
+      SingleUserPanel.currentPanel._panel.reveal(column);
+      SingleUserPanel.currentPanel._update();
       return;
     }
 
     // Otherwise, create a new panel.
     const panel = vscode.window.createWebviewPanel(
-      UserPanel.viewType,
-      "CodeBooth Users",
+      SingleUserPanel.viewType,
+      "CodeBooth User - " + BoothState.getSingleUserName(),
       column || vscode.ViewColumn.One,
       {
         // Enable javascript in the webview
@@ -45,16 +45,16 @@ export class UserPanel {
       }
     );
     panel.iconPath = vscode.Uri.joinPath(extensionUri, "media/icon.svg");
-    UserPanel.currentPanel = new UserPanel(panel, extensionUri);
+    SingleUserPanel.currentPanel = new SingleUserPanel(panel, extensionUri);
   }
 
   public static kill() {
-    UserPanel.currentPanel?.dispose();
-    UserPanel.currentPanel = undefined;
+    SingleUserPanel.currentPanel?.dispose();
+    SingleUserPanel.currentPanel = undefined;
   }
 
   public static revive(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
-    UserPanel.currentPanel = new UserPanel(panel, extensionUri);
+    SingleUserPanel.currentPanel = new SingleUserPanel(panel, extensionUri);
   }
 
   private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
@@ -83,7 +83,7 @@ export class UserPanel {
   }
 
   public dispose() {
-    UserPanel.currentPanel = undefined;
+    SingleUserPanel.currentPanel = undefined;
 
     // Clean up our resources
     this._panel.dispose();
@@ -106,19 +106,8 @@ export class UserPanel {
         case "get-token": {
           webview.postMessage({
             type: "token",
-            value: TokenManager.getToken(),
+            value: BoothState.getSingleUserId() + "/" + TokenManager.getToken(),
           });
-          break;
-        }
-
-        /* ---------------------------- Show Single User Page --------------------------- */
-        case "show-singleUser": {
-          // if (!data.value) {
-          //   return;
-          // }
-          BoothState.setSingleUserId(data.value.split("/")[0]);
-          BoothState.setSingleUserName(data.value.split("/")[1]);
-          await vscode.commands.executeCommand("codebooth.SingleUser");
           break;
         }
 
@@ -129,6 +118,7 @@ export class UserPanel {
           vscode.window.showInformationMessage(data.value);
           break;
         }
+
         case "onError": {
           if (!data.value) {
             return;
@@ -148,11 +138,11 @@ export class UserPanel {
   private _getHtmlForWebview(webview: vscode.Webview) {
     // // And the uri we use to load this script in the webview
     const scriptUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "out", "compiled", "Users.js")
+      vscode.Uri.joinPath(this._extensionUri, "out", "compiled", "UserPeek.js")
     );
 
     const styleMainUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "out", "compiled/Users.css")
+      vscode.Uri.joinPath(this._extensionUri, "out", "compiled/UserPeek.css")
     );
 
     const styleResetUri = webview.asWebviewUri(
@@ -168,7 +158,7 @@ export class UserPanel {
     // );
 
     const welStyleUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "media", "users.css")
+      vscode.Uri.joinPath(this._extensionUri, "media", "userpeek.css")
     );
 
     // const cssUri = webview.asWebviewUri(
@@ -183,7 +173,7 @@ export class UserPanel {
 			<head>
 				<meta charset="UTF-8">
 				<!-- Use a content security policy to only allow loading images from https or from our extension directory, and only allow scripts that have a specific nonce.-->
-          <meta http-equiv="Content-Security-Policy" content=" ${
+          <meta http-equiv="Content-Security-Policy" content="${
             webview.cspSource
           }; script-src 'nonce-${nonce}';">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">

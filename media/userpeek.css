@@ -1,0 +1,134 @@
+.wrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: calc(100vw - 20px);
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: start;
+  width: 800px;
+  height: 100vh;
+  /* border: 1px solid #757575; */
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.header {
+  /* background-color: black; */
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
+  align-items: start;
+  width: 100%;
+}
+
+.image {
+  display: inline-block;
+  padding: 0.4rem;
+  background: linear-gradient(150deg, #0e639c, #ff8c00);
+  margin: auto;
+  border-radius: 50%;
+  background-size: 380% 380%;
+  animation: animated-gradient 2s linear infinite;
+}
+
+@keyframes animated-gradient {
+  25% {
+    background-position: left bottom;
+  }
+  50% {
+    background-position: right bottom;
+  }
+  75% {
+    background-position: right top;
+  }
+  100% {
+    background-position: left top;
+  }
+}
+
+.image img {
+  width: 190px;
+  display: block;
+  height: 190px;
+  border-radius: 50%;
+}
+
+.right-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: start;
+  margin-left: 70px;
+}
+
+.right-col .name {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.right-col .name .isFollowing {
+  margin-left: 20px;
+}
+
+.right-col .name .isFollowing button {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.right-col .name .username {
+  font-size: 2rem;
+}
+
+.right-col .description {
+  margin-top: 0.5rem;
+}
+
+.right-col .flairs-row {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.right-col .flairs-row .flairItem {
+  color: var(--vscode-button-foreground);
+  background: var(--vscode-button-background);
+  padding-top: 0.3rem;
+  padding-bottom: 0.3rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  margin-right: 0.7rem;
+  border-radius: 1rem;
+  margin-top: 0.2rem;
+  cursor: pointer;
+}
+
+.right-col .others p {
+  margin-top: 0.5rem;
+}
+
+.follow-info {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.follow-info .followers {
+  margin-left: 20px;
+}

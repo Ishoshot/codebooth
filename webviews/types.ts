@@ -19,6 +19,36 @@ export type Activity = {
   updated_at: Date;
 };
 
+export type Followers = {
+  id: string;
+  github_id: string;
+  name: string;
+  email: string;
+  image: string;
+  github_url: string;
+  location: string;
+  company: string;
+  description: string;
+  created_at: Date;
+  updated_at: Date;
+  is_verified: boolean;
+};
+
+export type Follows = {
+  id: string;
+  github_id: string;
+  name: string;
+  email: string;
+  image: string;
+  github_url: string;
+  location: string;
+  company: string;
+  description: string;
+  created_at: Date;
+  updated_at: Date;
+  is_verified: boolean;
+};
+
 export type User = {
   id: string;
   github_id: string;
@@ -33,6 +63,11 @@ export type User = {
   updated_at: Date;
   is_verified: boolean;
   flairs: Array<Flair>;
+  follows: Array<Follows>;
+  followers: Array<Followers>;
+  isFollowingUser: boolean;
+  follows_count: number;
+  followers_count: number;
   __teams__: Array<Team>;
   __stars__: Array<Star>;
   __teamsIn__: Array<TeamMember>;

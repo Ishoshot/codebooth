@@ -89,6 +89,11 @@
         on:click={() => logOut()}
       />
     </div>
+
+    <div class="follow-info">
+      <span class="following">{user.follows_count} Following</span>
+      <span class="followers">{user.followers_count} Followers</span>
+    </div>
   </div>
 
   <div class="second">
@@ -184,18 +189,17 @@
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    overflow-x: scroll;
   }
 
   .flairItem {
     background-color: var(--vscode-button-secondaryBackground);
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
-    padding-left: 1.1rem;
-    padding-right: 1.1rem;
+    padding-top: 0.3rem;
+    padding-bottom: 0.3rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
     margin-right: 0.6rem;
     border-radius: 1rem;
-    margin-top: 0.6rem;
+    margin-top: 0.2rem;
     cursor: pointer;
   }
 
@@ -215,7 +219,7 @@
   }
 
   .first-row {
-    margin-top: 0.5rem;
+    margin-top: 1.5rem;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -314,5 +318,17 @@
     border-bottom: 1px solid var(--vscode-foreground);
     padding-top: 1rem;
     padding-bottom: 1rem;
+  }
+
+  .follow-info {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .follow-info .followers {
+    margin-left: 20px;
   }
 </style>

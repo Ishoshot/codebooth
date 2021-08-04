@@ -265,7 +265,7 @@
           value: undefined,
         });
       }
-    }, 1000);
+    }, 1500);
 
     // Call for Token
     tsvscode.postMessage({
