@@ -199,7 +199,7 @@
     padding-right: 1rem;
     margin-right: 0.6rem;
     border-radius: 1rem;
-    margin-top: 0.2rem;
+    margin-top: 0.3rem;
     cursor: pointer;
   }
 

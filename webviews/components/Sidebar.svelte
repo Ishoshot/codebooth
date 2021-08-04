@@ -225,6 +225,40 @@
     }
   }
 
+  // Update User Preferences
+  async function updatePreference(event: CustomEvent<any>) {
+    let type = event.detail.type;
+    let value = event.detail.value;
+    const response = await fetch(`${apiBaseURL}/users/preference`, {
+      method: "POST",
+      body: JSON.stringify({
+        type: type,
+        value: value,
+      }),
+      headers: {
+        "content-type": "application/json",
+        accept: "application/json",
+        authorization: `Bearer ${accessToken}`,
+      },
+    });
+    const data: any = await response.json();
+    console.log(data);
+
+    if (response.status !== 200) {
+      tsvscode.postMessage({
+        type: "onError",
+        value:
+          "Error Encountered While Updating Preference. Possible Solution(s): Try Again after a while OR Please create an Issue on GitHub",
+      });
+      return;
+    } else {
+      tsvscode.postMessage({
+        type: "onInfo",
+        value: `Changes Synchronized Successfully`,
+      });
+    }
+  }
+
   onMount(async () => {
     window.addEventListener("message", async (event) => {
       const message = event.data; // The json data sent from the extension
@@ -275,6 +309,7 @@
   });
 
   import { Skeleton } from "svelte-loading-skeleton";
+  import Settings from "./Settings.svelte";
 </script>
 
 <!-- MOCK UP -->
@@ -313,7 +348,10 @@
       {:else if page === "notifications"}
         <Notifications {activities} {accessToken} />
       {:else}
-        <h1>Settings</h1>
+        <Settings
+          {user}
+          on:updatePreference={(event) => updatePreference(event)}
+        />
       {/if}
     {:else}
       <!-- UnAuthenticated Users - Login Screen -->

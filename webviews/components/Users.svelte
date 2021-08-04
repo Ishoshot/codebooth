@@ -118,9 +118,6 @@
                     <div class="user-each">
                       <img src={user.image} alt="avatar" />
                     </div>
-                    <span class="fa fa-star">
-                      <!-- {user.__stars__.length} -->
-                    </span>
                   </div>
 
                   <p class="name">
@@ -213,7 +210,7 @@
         <!-- No User Found -->
         <div class="center">
           <NoDataFound
-            message="Oops 😔 ! There are no users at the moment. Kindly check back..."
+            message="Oops!😔 There are no users at the moment. Kindly check back..."
           />
         </div>
       {/if}

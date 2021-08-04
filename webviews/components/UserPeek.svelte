@@ -58,6 +58,7 @@
         <i class="fa fa-spinner fa-spin" />
       </div>
     {:else}
+      <!-- Header -->
       <div class="header">
         <div class="left-col">
           <div class="image">
@@ -138,6 +139,8 @@
           </div>
         </div>
       </div>
+
+      <!-- Body -->
     {/if}
   </div>
 </div>

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import type { User, Activity, TeamMember } from "../types";
+  import type { Activity } from "../types";
 
   export let accessToken: string;
   // export let user: User;

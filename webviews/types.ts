@@ -19,7 +19,7 @@ export type Activity = {
   updated_at: Date;
 };
 
-export type Followers = {
+export type Follower = {
   id: string;
   github_id: string;
   name: string;
@@ -34,7 +34,7 @@ export type Followers = {
   is_verified: boolean;
 };
 
-export type Follows = {
+export type Follow = {
   id: string;
   github_id: string;
   name: string;
@@ -63,11 +63,18 @@ export type User = {
   updated_at: Date;
   is_verified: boolean;
   flairs: Array<Flair>;
-  follows: Array<Follows>;
-  followers: Array<Followers>;
+  follows: Array<Follow>;
+  followers: Array<Follower>;
   isFollowingUser: boolean;
   follows_count: number;
   followers_count: number;
+  notify_follow: boolean;
+  notify_teams: boolean;
+  notify_projects: boolean;
+  notify_codes: boolean;
+  show_codes: boolean;
+  show_teams: boolean;
+  show_projects: boolean;
   __teams__: Array<Team>;
   __stars__: Array<Star>;
   __teamsIn__: Array<TeamMember>;
